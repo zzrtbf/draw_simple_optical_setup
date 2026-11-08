@@ -249,6 +249,7 @@ Optical Bench.bat     双击启动（Windows，免安装）
 Optical Bench.command 双击启动（macOS，免打包的 Safari 路径）
 README.en.md          英文版 README（与本文对应，改功能时两边一起改）
 LICENSE               MIT（只覆盖代码与文档，不覆盖器件图形）
+AGENTS.md             开发约定：命令、硬约束、坐标与器件朝向（也是给 AI 协作者的说明）
 MIGRATION-TO-MACOS.md macOS 迁移任务书
 Draw Simple Optical Setup.md  最初的需求书（v1.0 之前写下的功能清单）
 docs/PLATFORMS.md     双平台（macOS / Windows）在一个仓库里的组织方式、发版流程、桥接口约定

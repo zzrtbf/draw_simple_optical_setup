@@ -23,3 +23,9 @@ desktop.ini
 # 程序只读 ComponentLibrary_files/svg/（构建期 npm run gen 用）；
 # png/ 当年只用来做器件对照，1 MB，不上传。
 ComponentLibrary_files/png/
+
+# ── 工作状态（project-memory）─────────────────────────
+# AGENTS.md 是公开的开发约定，跟着代码走；
+# STATE.md / LOG.md 是作者自己的工作状态与决策记录，只留本地，不推到公开仓库。
+STATE.md
+LOG.md

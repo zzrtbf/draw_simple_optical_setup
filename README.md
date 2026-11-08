@@ -1,3 +1,5 @@
+[English](README.en.md) | **中文**
+
 # Optical Bench — 2D 光路排布设计器
 
 用来在搭光路之前排布器件的桌面级 Web 应用：真实 mm 刻度、25 mm 孔阵、器件间对齐吸附与
@@ -245,6 +247,7 @@ assets/
   parts/*.svg       自己画的器件
 Optical Bench.bat     双击启动（Windows，免安装）
 Optical Bench.command 双击启动（macOS，免打包的 Safari 路径）
+README.en.md          英文版 README（与本文对应，改功能时两边一起改）
 MIGRATION-TO-MACOS.md macOS 迁移任务书
 Draw Simple Optical Setup.md  最初的需求书（v1.0 之前写下的功能清单）
 docs/PLATFORMS.md     双平台（macOS / Windows）在一个仓库里的组织方式、发版流程、桥接口约定

@@ -25,7 +25,5 @@ desktop.ini
 ComponentLibrary_files/png/
 
 # ── 工作状态（project-memory）─────────────────────────
-# AGENTS.md 是公开的开发约定，跟着代码走；
-# STATE.md / LOG.md 是作者自己的工作状态与决策记录，只留本地，不推到公开仓库。
-STATE.md
-LOG.md
+# STATE.md / LOG.md 是**刻意入库**的：它们要在 Mac 与 Windows 两台机器之间同步。
+# 不要把它们加回这个文件（理由与同步纪律见 AGENTS.md 的「工作状态约定」）。

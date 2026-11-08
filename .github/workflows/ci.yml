@@ -5,7 +5,15 @@ name: ci
 on:
   push:
     branches: [main]
+    # 跨机器同步笔记会频繁推送这两个文件，它们不影响构建，跳过免得白烧两个 job。
+    # 同一次提交里只要还有别的文件改动，CI 照跑。
+    paths-ignore:
+      - STATE.md
+      - LOG.md
   pull_request:
+    paths-ignore:
+      - STATE.md
+      - LOG.md
   workflow_dispatch:
 
 jobs:

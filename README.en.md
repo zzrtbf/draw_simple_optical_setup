@@ -279,6 +279,8 @@ Optical Bench.bat     double-click launcher (Windows, no install)
 Optical Bench.command double-click launcher (macOS, the no-bundling Safari path)
 LICENSE               MIT (code and documentation only, not the component graphics)
 AGENTS.md             development conventions: commands, hard rules, coordinates and orientations
+STATE.md              current state, settled decisions and next steps (handover notes, synced across machines)
+LOG.md                decision and attempt log, append-only (newest first)
 MIGRATION-TO-MACOS.md the macOS migration brief
 Draw Simple Optical Setup.md  the original requirements note (feature list written before v1.0)
 docs/PLATFORMS.md     how macOS and Windows live in one repo, release flow, bridge contract

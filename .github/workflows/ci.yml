@@ -1,0 +1,39 @@
+name: ci
+
+# 两个平台各跑一遍「能装、能类型检查、能构建」。
+# 目的不是替代人工验收，而是保证只在 Mac 上开发时 Windows 那条线不会悄悄烂掉。
+on:
+  push:
+    branches: [main]
+  pull_request:
+  workflow_dispatch:
+
+jobs:
+  build:
+    name: ${{ matrix.os }}
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [macos-latest, windows-latest]
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
+          cache: npm
+
+      - name: 安装依赖
+        run: npm ci
+
+      - name: 类型检查
+        run: npm run typecheck
+
+      - name: 构建前端
+        run: npm run build
+
+      # Playwright 回归（npm run test:ui）没有放进 CI：需要额外的浏览器下载，
+      # 每个 job 会多几分钟。改交互代码时本地跑，见 README「回归测试」。
+      # macOS 的 .app / .dmg 只在发版时于本机构建，见 docs/PLATFORMS.md。

@@ -1,0 +1,25 @@
+# ── 依赖 ──────────────────────────────────────────────
+node_modules/
+
+# ── 构建产物 ──────────────────────────────────────────
+# 都能用 `npm run build` / `npm run app:build` 重新生成，不进版本库；
+# 给用户下载的 .dmg / Windows 安装包走 GitHub Releases（见 docs/PLATFORMS.md）。
+dist/
+build/
+*.dmg
+*.zip
+*.exe
+*.msi
+
+# ── 系统 / 编辑器垃圾 ─────────────────────────────────
+.DS_Store
+Thumbs.db
+desktop.ini
+*.swp
+*.log
+.tmp/
+
+# ── 器件库里的手稿对照图 ──────────────────────────────
+# 程序只读 ComponentLibrary_files/svg/（构建期 npm run gen 用）；
+# png/ 当年只用来做器件对照，1 MB，不上传。
+ComponentLibrary_files/png/

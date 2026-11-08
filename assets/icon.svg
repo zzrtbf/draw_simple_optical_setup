@@ -1,0 +1,43 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 256 256" width="256" height="256">
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#13202f"/>
+      <stop offset="0.55" stop-color="#0b1219"/>
+      <stop offset="1" stop-color="#060a0e"/>
+    </linearGradient>
+    <linearGradient id="glass" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#ffffff"/>
+      <stop offset="0.38" stop-color="#e2edf6"/>
+      <stop offset="1" stop-color="#8ba3b8"/>
+    </linearGradient>
+    <radialGradient id="spot" cx="0.5" cy="0.5" r="0.5">
+      <stop offset="0" stop-color="#ff3b52" stop-opacity="0.9"/>
+      <stop offset="0.42" stop-color="#ff3b52" stop-opacity="0.32"/>
+      <stop offset="1" stop-color="#ff3b52" stop-opacity="0"/>
+    </radialGradient>
+    <clipPath id="round">
+      <rect x="0" y="0" width="256" height="256" rx="56"/>
+    </clipPath>
+  </defs>
+
+  <rect x="0" y="0" width="256" height="256" rx="56" fill="url(#bg)"/>
+  <g clip-path="url(#round)">
+    <rect x="0" y="0" width="256" height="4" fill="#7ef0dc" opacity="0.25"/>
+
+    <!-- converging beam: halo, body, hot core -->
+    <polygon points="24,78 202,128 24,178" fill="#38e1c4" opacity="0.16"/>
+    <polygon points="24,96 202,128 24,160" fill="#38e1c4" opacity="0.5"/>
+    <polygon points="24,116 202,128 24,140" fill="#c2fff4" opacity="0.95"/>
+
+    <circle cx="202" cy="128" r="34" fill="url(#spot)"/>
+
+    <!-- biconvex lens -->
+    <path d="M118 62 C160 92 160 164 118 194 C76 164 76 92 118 62 Z"
+          fill="url(#glass)" stroke="#050b10" stroke-width="5.5" stroke-linejoin="round"/>
+    <path d="M104 88 C114 110 114 146 104 168" fill="none" stroke="#ffffff"
+          stroke-opacity="0.6" stroke-width="5" stroke-linecap="round"/>
+
+    <circle cx="202" cy="128" r="10" fill="#ff3b52"/>
+    <circle cx="202" cy="128" r="4" fill="#ffe3e7"/>
+  </g>
+</svg>

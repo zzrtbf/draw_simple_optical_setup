@@ -277,6 +277,7 @@ assets/
   parts/*.svg       hand-drawn components
 Optical Bench.bat     double-click launcher (Windows, no install)
 Optical Bench.command double-click launcher (macOS, the no-bundling Safari path)
+LICENSE               MIT (code and documentation only, not the component graphics)
 MIGRATION-TO-MACOS.md the macOS migration brief
 Draw Simple Optical Setup.md  the original requirements note (feature list written before v1.0)
 docs/PLATFORMS.md     how macOS and Windows live in one repo, release flow, bridge contract
@@ -323,14 +324,20 @@ After changing the icon source: `npm run icon` regenerates `assets/app.ico`.
 
 ## Licence
 
+**The code is MIT, the component graphics are CC BY-NC — two separate things, do not conflate them.**
+
+* **Code and documentation**: [MIT](LICENSE), Copyright (c) 2026 zzrtbf. Use it, modify it, redistribute
+  it freely, **commercial use included**, as long as the copyright and permission notice are kept. The
+  software is provided "as is", without warranty of any kind.
 * **Component graphics**: ComponentLibrary by Alexander Franzen, **CC BY-NC 3.0**
   (Attribution–NonCommercial). The author explicitly waives attribution when the library is used to
   create a small number of illustrations for a new work, but distributing this software or using the
   library for a major part of a larger work requires attribution. `ComponentLibrary_files/` and
   `src/generated/library.ts` fall under that licence; the app credits it in the UI.
-* **The rest of the code**: all rights reserved by the author; no open-source licence is attached yet.
-  If you want others to be able to reuse it freely, add a LICENSE file (MIT, for instance) — there is
-  no third-party restriction on the code itself.
+
+In other words: **`LICENSE` does not cover the graphics in `ComponentLibrary_files/` or
+`src/generated/library.ts`.** Using the whole program commercially requires separate permission from
+Alexander Franzen.
 
 > The deep-dive documents under `docs/` exist only in Chinese.
 

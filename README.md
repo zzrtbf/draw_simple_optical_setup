@@ -248,6 +248,7 @@ assets/
 Optical Bench.bat     双击启动（Windows，免安装）
 Optical Bench.command 双击启动（macOS，免打包的 Safari 路径）
 README.en.md          英文版 README（与本文对应，改功能时两边一起改）
+LICENSE               MIT（只覆盖代码与文档，不覆盖器件图形）
 MIGRATION-TO-MACOS.md macOS 迁移任务书
 Draw Simple Optical Setup.md  最初的需求书（v1.0 之前写下的功能清单）
 docs/PLATFORMS.md     双平台（macOS / Windows）在一个仓库里的组织方式、发版流程、桥接口约定
@@ -289,8 +290,14 @@ PW_ENGINE=webkit EDGE_PATH="$(ls -d ~/Library/Caches/ms-playwright/chromium-*/ch
 
 ## 许可
 
+**代码是 MIT，器件图形是 CC BY-NC——两者分开，不要混为一谈。**
+
+* **代码与文档**：[MIT](LICENSE)，Copyright (c) 2026 zzrtbf。
+  可以自由使用、修改、再分发，**包括商业用途**，只要保留版权与许可声明；
+  软件按「现状」提供，作者不作担保、不担责任。
 * **器件图形**：ComponentLibrary by Alexander Franzen，**CC BY-NC 3.0**（署名—非商业性使用）。
   用于论文/网页的少量插图时作者明确放弃署名要求，但分发本软件或大篇幅使用时需保留署名——
   `ComponentLibrary_files/` 与 `src/generated/library.ts` 都在这个授权范围内，界面上已注明。
-* **其余代码**：作者保留所有权利，暂未附加开源许可。如果希望别人能自由复用，加一个
-  LICENSE（例如 MIT）即可——代码这边没有第三方限制。
+
+换句话说：**`LICENSE` 管不到 `ComponentLibrary_files/` 和 `src/generated/library.ts` 里的图形。**
+想把整个软件用于商业用途，得另外向 Alexander Franzen 取得授权。

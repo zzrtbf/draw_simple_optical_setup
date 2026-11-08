@@ -4,6 +4,8 @@
   "version": "1.3.2",
   "type": "module",
   "description": "2D optical table layout designer (mm-accurate)",
+  "license": "MIT",
+  "author": "zzrtbf",
   "scripts": {
     "dev": "vite",
     "build": "vite build",

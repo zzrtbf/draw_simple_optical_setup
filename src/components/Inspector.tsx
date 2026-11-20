@@ -161,6 +161,33 @@ function OpticsSection({ item, c }: { item: LibItem; c: ReturnType<typeof useCom
   }
 
   if (spec.role === 'lens') {
+    if (spec.workingDistance !== undefined) {
+      const wd = item.workingDistance ?? spec.workingDistance;
+      const windowAt = ((spec.faceAt ?? 0.5) - 0.5) * item.w;
+      return (
+        <Section title="Objective lens">
+          <Row>
+            <NumField
+              label="WD"
+              unit="mm"
+              step={1}
+              min={0.1}
+              max={500}
+              value={wd}
+              onFocusDirty={c.begin}
+              onChange={(v) => c.commitItem(item.id, { workingDistance: v })}
+            />
+            <div className="field-spacer" />
+            <span className="pill">window +{round1(windowAt)} mm</span>
+          </Row>
+          <div className="hint">
+            The lens sits at the front (exit) window, not at the barrel centre. A collimated beam
+            entering from the back focuses {round1(wd)} mm beyond that window; a converging or
+            diverging input lands closer or farther, as 1/q&prime; = 1/q &minus; 1/WD.
+          </div>
+        </Section>
+      );
+    }
     const f = item.focal ?? spec.focal ?? 100;
     return (
       <Section title="Thin lens">
@@ -178,19 +205,36 @@ function OpticsSection({ item, c }: { item: LibItem; c: ReturnType<typeof useCom
         </Row>
         <div className="hint">
           Positive f converges, negative diverges. 1/q&prime; = 1/q &minus; 1/f, so the beam diameter
-          follows the Gaussian envelope as it propagates.
+          follows the Gaussian envelope as it propagates. The thin lens stands at the part centre.
         </div>
       </Section>
     );
   }
 
   if (spec.role === 'splitter') {
+    const split = item.split ?? spec.split ?? 0.5;
+    const tPct = Math.round(split * 1000) / 10;
     return (
       <Section title="Beamsplitter">
+        <Row>
+          <NumField
+            label="T"
+            unit="%"
+            step={1}
+            min={0}
+            max={100}
+            value={tPct}
+            onFocusDirty={c.begin}
+            onChange={(v) => c.commitItem(item.id, { split: Math.min(1, Math.max(0, v / 100)) })}
+          />
+          <div className="field-spacer" />
+          <span className="pill">R {round1(100 - tPct)} %</span>
+        </Row>
         <div className="hint">
-          Splits into a transmitted and a reflected arm, both inheriting the incoming diameter and
-          divergence. Coating runs along the drawn diagonal; rotate the part to change which way the
-          reflected arm leaves.
+          Manual power split: T transmitted, R = 100 % &minus; T reflected. Both arms keep the
+          incoming diameter and divergence; only the brightness follows the ratio, so a 50/50 split
+          looks unchanged. 0 % or 100 % removes one arm. Coating runs along the drawn diagonal;
+          rotate the part to change which way the reflected arm leaves.
         </div>
       </Section>
     );

@@ -6,9 +6,12 @@
  *     q = i z_R with z_R = pi w0^2 / lambda;
  *   - propagation over a distance d: q -> q + d;
  *   - thin lens: 1/q' = 1/q - 1/f (f > 0 converging, f < 0 diverging);
+ *   - objective lens: a thin lens standing at the barrel's front window, with
+ *     f = working distance, so a collimated input focuses WD beyond the window;
  *   - flat mirror: direction reflected about the surface normal, q unchanged;
  *   - beamsplitter: the transmitted branch keeps q, the reflected branch keeps q
- *     too — same diameter and same convergence on both arms, as requested;
+ *     too — same diameter and same convergence on both arms, as requested; the
+ *     transmitted arm carries T of the power, the reflected arm 1 - T (manual);
  *   - the beam radius follows the Gaussian envelope
  *     w(z) = sqrt(-lambda / (pi Im(1/q))), i.e. hyperbolic, not a straight taper.
  *
@@ -45,6 +48,8 @@ export interface TracedBeam {
   wavelength: number;
   color: string;
   opacity: number;
+  /** fraction of the source power still in this arm (splitters remove energy) */
+  power: number;
   diameter: number;
   samples: BeamSample[];
   hits: BeamHit[];
@@ -61,6 +66,8 @@ const MAX_SEGMENTS = 80;
 const MAX_PATHS = 64;
 const MAX_DEPTH = 8;
 const SAMPLES_PER_SEGMENT = 24;
+/** below this fraction of the source power an arm is not worth drawing */
+const MIN_POWER = 1e-3;
 
 /**
  * Where to sample along one straight run. Uniform spacing plus the beam waist
@@ -146,14 +153,25 @@ export function buildElements(project: Project): Element[] {
     const base = { x: Math.cos((spec.surfaceDeg * Math.PI) / 180), y: Math.sin((spec.surfaceDeg * Math.PI) / 180) };
     const u = rotate(base, it.rot);
     const half = spec.role === 'splitter' ? Math.hypot(it.w, it.h) / 2 : Math.max(it.h, 4) / 2;
+    // Most parts are optically active at their centre. An objective's active
+    // face is its front window, offset along the barrel from the rotation centre.
+    const axis = rotate({ x: 1, y: 0 }, it.rot);
+    const offset = ((spec.faceAt ?? 0.5) - 0.5) * it.w;
+    const lib = it as LibItem;
+    // An objective is a thin lens standing at the exit window; its working
+    // distance is the focal length of that stand-in lens.
+    const focal =
+      spec.workingDistance !== undefined
+        ? (lib.workingDistance ?? spec.workingDistance)
+        : (lib.focal ?? spec.focal ?? 100);
     out.push({
       id: it.id,
       role: spec.role,
-      center: { x: it.x, y: it.y },
+      center: { x: it.x + axis.x * offset, y: it.y + axis.y * offset },
       surface: u,
       half: half + 0.6,
-      split: (it as LibItem).split ?? spec.split ?? 0.5,
-      focal: (it as LibItem).focal ?? spec.focal ?? 100,
+      split: lib.split ?? spec.split ?? 0.5,
+      focal,
     });
   }
   return out;
@@ -202,6 +220,8 @@ interface PathState {
   dir: Vec;
   /** q at `pos` */
   q: Complex;
+  /** fraction of the source power still in this path */
+  power: number;
   depth: number;
   samples: BeamSample[];
   hits: BeamHit[];
@@ -244,6 +264,7 @@ export function traceScene(project: Project): TracedBeam[] {
         pos: startPos,
         dir,
         q: { re: 0, im: rayleighRange(w0, lambda) },
+        power: 1,
         depth: 0,
         samples: [{ x: startPos.x, y: startPos.y, hw: w0 }],
         hits: [],
@@ -323,7 +344,9 @@ export function traceScene(project: Project): TracedBeam[] {
         if (bestEl.role === 'splitter') {
           const n = { x: -bestEl.surface.y, y: bestEl.surface.x };
           const reflected = reflect(d, n);
-          if (state.depth < MAX_DEPTH) {
+          const split = Math.min(1, Math.max(0, bestEl.split));
+          const reflectedPower = state.power * (1 - split);
+          if (reflectedPower > MIN_POWER && state.depth < MAX_DEPTH) {
             const startHw = halfWidthFromQ(state.q, lambda);
             queue.push({
               id: `${state.id}r${queue.length}`,
@@ -331,23 +354,31 @@ export function traceScene(project: Project): TracedBeam[] {
               pos: { x: hitPoint.x + reflected.x * EPS, y: hitPoint.y + reflected.y * EPS },
               dir: reflected,
               q: state.q,
+              power: reflectedPower,
               depth: state.depth + 1,
               samples: [{ x: hitPoint.x, y: hitPoint.y, hw: Number.isFinite(startHw) ? startHw : w0 }],
               hits: [...state.hits],
             });
+          }
+          state.power *= split;
+          if (state.power <= MIN_POWER) {
+            // the transmitted arm carries no measurable power — nothing to draw
+            ended = 'limit';
+            break;
           }
           state.pos = { x: hitPoint.x + d.x * EPS, y: hitPoint.y + d.y * EPS };
           continue;
         }
       }
 
-      if (state.samples.length > 1) {
+      if (state.samples.length > 1 && state.power > MIN_POWER) {
         beams.push({
           id: state.id,
           sourceId: state.sourceId,
           wavelength,
           color: wavelengthToColor(wavelength),
           opacity,
+          power: state.power,
           diameter,
           samples: state.samples,
           hits: state.hits,

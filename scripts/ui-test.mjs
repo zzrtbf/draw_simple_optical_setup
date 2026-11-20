@@ -69,6 +69,15 @@ await page.waitForTimeout(700);
 let st = await readState();
 check('demo loads 9 parts', st.items.length === 9, `items=${st.items.length}`);
 check('demo loads 5 beams', st.beams.length === 5);
+
+/* traced light must be painted under the hardware, not on top of it */
+const layer = await page.evaluate(() => {
+  const auto = document.querySelector('[data-world] [data-auto-beams]');
+  const part = document.querySelector('[data-world] g.item');
+  if (!auto || !part) return 'missing';
+  return auto.compareDocumentPosition(part) & Node.DOCUMENT_POSITION_FOLLOWING ? 'below' : 'above';
+});
+check('traced beams sit below the parts', layer === 'below', layer);
 await page.screenshot({ path: `${outDir}/01-demo.png` });
 
 /* drag a part into empty bench space so no neighbour guide takes over */

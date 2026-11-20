@@ -51,6 +51,12 @@ export interface LibItem extends ItemBase {
   couplerMode?: 'out' | 'in';
   /** thin-lens focal length, mm; positive converges */
   focal?: number;
+  /**
+   * objective: distance from the exit window to the focus of a collimated beam,
+   * mm. The objective model puts the lens at the front window, so this is also
+   * the effective focal length of the thin-lens stand-in.
+   */
+  workingDistance?: number;
   /** splitter: fraction transmitted */
   split?: number;
 }
@@ -187,7 +193,13 @@ export function normalizeProject(p: Project): Project {
         if (o.beamOpacity === undefined) o.beamOpacity = 0.9;
         if (spec.role === 'coupler' && o.couplerMode === undefined) o.couplerMode = 'out';
       }
-      if (spec?.role === 'lens' && o.focal === undefined) o.focal = spec.focal ?? 100;
+      if (spec?.role === 'lens') {
+        if (spec.workingDistance !== undefined) {
+          if (o.workingDistance === undefined) o.workingDistance = spec.workingDistance;
+        } else if (o.focal === undefined) {
+          o.focal = spec.focal ?? 100;
+        }
+      }
       if (spec?.role === 'splitter' && o.split === undefined) o.split = spec.split ?? 0.5;
     }
     return o as Item;

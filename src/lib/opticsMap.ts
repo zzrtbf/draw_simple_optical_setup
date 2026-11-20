@@ -33,6 +33,20 @@ export interface OpticSpec {
   wavelength?: number;
   /** default focal length, mm; positive converges (lenses only) */
   focal?: number;
+  /**
+   * Where the optically active face sits along local +x, as a fraction of the
+   * part width measured from the local -x edge. 0.5 (the default) = the part
+   * centre, which is right for a thin lens drawn as a plate. An objective is a
+   * barrel whose refracting surface is its front window, so its face sits near
+   * the +x edge.
+   */
+  faceAt?: number;
+  /**
+   * Objective only: distance from the exit window to the focus of a collimated
+   * beam, mm. The lens stand-in is placed at the exit window, so this doubles
+   * as its effective focal length.
+   */
+  workingDistance?: number;
   /** default split ratio transmitted / (transmitted + reflected) (splitters only) */
   split?: number;
 }
@@ -60,7 +74,11 @@ export const OPTICS: Record<string, OpticSpec> = {
   'b-lens1': { role: 'lens', surfaceDeg: 90, focal: 150 },
   'b-lens2': { role: 'lens', surfaceDeg: 90, focal: 100 },
   'b-lens3': { role: 'lens', surfaceDeg: 90, focal: -100 },
-  'x-objective': { role: 'lens', surfaceDeg: 90, focal: 18 },
+  // The artwork is a 48 mm barrel whose front (exit) window is the flat face at
+  // x = 46.5 of 48, i.e. 96.875 % of the width measured from the back edge.
+  // A collimated beam entering from the back therefore focuses workingDistance
+  // beyond that window, not beyond the barrel centre.
+  'x-objective': { role: 'lens', surfaceDeg: 90, workingDistance: 15, faceAt: 0.96875 },
 
   /* ---- beamsplitters: coating along the drawn diagonal ---- */
   // b-bsp / b-diccube: diagonal from the top-left corner to the bottom-right one

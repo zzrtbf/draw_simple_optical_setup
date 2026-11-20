@@ -8,7 +8,9 @@ vector / high-resolution export, and a 3D data format intended for Blender.
 
 Since v1.3.2 it also **traces beams automatically**: lasers and fibre couplers emit, mirrors fold,
 lenses focus, beamsplitters split, detectors terminate — and the beam diameter follows Gaussian
-propagation. Move any part and every path is recomputed immediately.
+propagation. Move any part and every path is recomputed immediately. An objective focuses by its
+**working distance** (a collimated input lands WD beyond the exit window), BS / PBS **transmission**
+is set by hand, and the traced light is painted under the parts.
 
 ![auto beams](docs/auto-beams.png)
 
@@ -292,10 +294,10 @@ docs/MACOS-SAFARI.md  the no-bundling (Safari) path
 
 ```bash
 npm run dev          # one terminal
-npm run test:ui      # another terminal: three suites, 78 checks in total
-                     #   26 interaction (drag/zoom/rotate/beam drawing/export/save)
-                     #   25 new features (white canvas, labels, snapping, panels)
-                     #   27 optics engine (reflection/lens focus/splitting/detector/wavelength colours)
+npm run test:ui      # another terminal: three suites, 90 checks in total
+                     #   27 interaction (drag/zoom/rotate/beam drawing/export/save/layer order)
+                     #   29 new features (white canvas, labels, snapping, panels, objective WD, BS ratio)
+                     #   34 optics engine (reflection/lens focus/objective WD/split ratio/detector/wavelength)
 ```
 
 By default it uses the system Edge; `EDGE_PATH` points it at another Chromium.

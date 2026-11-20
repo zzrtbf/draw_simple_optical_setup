@@ -41,7 +41,15 @@ function round(v: number): number {
  * stored in the project, so moving a mirror re-routes the light immediately.
  */
 export function AutoBeams({ project }: { project: Project }) {
-  const beams = useMemo(() => traceScene(project), [project]);
+  const { beams, peak } = useMemo(() => {
+    const traced = traceScene(project);
+    // Brightness encodes the split ratio. Normalise per source so the strongest
+    // arm keeps the configured opacity: a 50/50 split looks unchanged, a 90/10
+    // split makes the reflected arm visibly fainter.
+    const peak = new Map<string, number>();
+    for (const b of traced) peak.set(b.sourceId, Math.max(peak.get(b.sourceId) ?? 0, b.power));
+    return { beams: traced, peak };
+  }, [project]);
   if (!project.board.showAutoBeams || beams.length === 0) return null;
 
   return (
@@ -50,20 +58,23 @@ export function AutoBeams({ project }: { project: Project }) {
         const polygon = ribbon(b.samples);
         if (!polygon) return null;
         const last = b.samples[b.samples.length - 1];
+        const share = b.power / (peak.get(b.sourceId) || 1);
+        // A faint floor keeps a 99:1 arm visible as a hairline instead of vanishing.
+        const op = b.opacity * Math.max(share, 0.06);
         return (
-          <g key={b.id} data-auto-beam={b.id} data-wavelength={b.wavelength}>
+          <g key={b.id} data-auto-beam={b.id} data-wavelength={b.wavelength} data-power={b.power.toFixed(4)}>
             {/* soft halo so the beam reads on a dark bench */}
-            <polygon points={polygon} fill={b.color} fillOpacity={b.opacity * 0.16} stroke="none" />
+            <polygon points={polygon} fill={b.color} fillOpacity={op * 0.16} stroke="none" />
             <polygon
               points={polygon}
               fill={b.color}
-              fillOpacity={b.opacity * 0.55}
+              fillOpacity={op * 0.55}
               stroke={b.color}
-              strokeOpacity={b.opacity * 0.9}
+              strokeOpacity={op * 0.9}
               strokeWidth={0.12}
               strokeLinejoin="round"
             />
-            {b.ended === 'detector' && <circle cx={last.x} cy={last.y} r={0.7} fill={b.color} fillOpacity={0.9} />}
+            {b.ended === 'detector' && <circle cx={last.x} cy={last.y} r={0.7} fill={b.color} fillOpacity={0.9 * op} />}
           </g>
         );
       })}

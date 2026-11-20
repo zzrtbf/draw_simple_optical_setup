@@ -101,6 +101,47 @@ const lines = await page.evaluate(async () => {
       b.length === 2 ? `${b[0].samples[0].hw.toFixed(4)} vs ${b[1].samples[0].hw.toFixed(4)}` : 'n/a');
   }
 
+  /* --- objective: working distance is measured from the exit window --- */
+  {
+    const obj = (wd) => item('O', 'x-objective', 300, 100, 0, { w: 48, h: 30, workingDistance: wd });
+    const b = traceScene(proj([laser(100, 100, { wavelength: 1064 }), obj(15)]));
+    const waist = b[0].samples.reduce((a, s) => (s.hw < a.hw ? s : a));
+    const windowAt = 300 + (46.5 / 48 - 0.5) * 48; // front (exit) window of the artwork
+    check('objective: collimated input focuses at exit window + WD',
+      Math.abs(waist.x - (windowAt + 15)) < 1, `waist at x=${waist.x.toFixed(1)}, expected ${(windowAt + 15).toFixed(1)}`);
+    const beforeWindow = b[0].samples.filter((s) => s.x > 300 && s.x < windowAt);
+    check('objective: no focus at the barrel centre',
+      Math.min(...beforeWindow.map((s) => s.hw)) > 0.9,
+      `min hw before the window ${Math.min(...beforeWindow.map((s) => s.hw)).toFixed(3)} mm`);
+    const far = traceScene(proj([laser(100, 100, { wavelength: 1064 }), obj(40)]));
+    const farWaist = far[0].samples.reduce((a, s) => (s.hw < a.hw ? s : a));
+    check('objective: WD sets the focus distance',
+      Math.abs(farWaist.x - (windowAt + 40)) < 1, `waist at x=${farWaist.x.toFixed(1)}, expected ${(windowAt + 40).toFixed(1)}`);
+  }
+
+  /* --- splitter ratio --- */
+  {
+    const s = (split) => item('S', 'b-bsp', 300, 100, 0, { w: 23.4, h: 23.4, split });
+    const arms = traceScene(proj([laser(100, 100), s(0.9)]));
+    const transmitted = arms.find((b) => b.samples[b.samples.length - 1].x > 320);
+    const reflected = arms.find((b) => b !== transmitted);
+    check('T = 90 %: transmitted arm keeps 90 % of the power',
+      transmitted && Math.abs(transmitted.power - 0.9) < 1e-9,
+      transmitted ? transmitted.power.toFixed(3) : 'missing');
+    check('T = 90 %: reflected arm keeps 10 % of the power',
+      reflected && Math.abs(reflected.power - 0.1) < 1e-9,
+      reflected ? reflected.power.toFixed(3) : 'missing');
+    const onlyT = traceScene(proj([laser(100, 100), s(1)]));
+    check('T = 100 %: the reflected arm is dropped',
+      onlyT.length === 1 && onlyT[0].samples[onlyT[0].samples.length - 1].x > 400,
+      `${onlyT.length} arm(s)`);
+    const onlyR = traceScene(proj([laser(100, 100), s(0)]));
+    const rEnd = onlyR[0]?.samples[onlyR[0].samples.length - 1];
+    check('T = 0 %: only the reflected arm is drawn',
+      onlyR.length === 1 && rEnd.y > 300 && Math.abs(rEnd.x - 300) < 3,
+      onlyR.length === 1 ? `ends at ${rEnd.x.toFixed(1)},${rEnd.y.toFixed(1)}` : `${onlyR.length} arms`);
+  }
+
   /* --- divergence survives the split --- */
   {
     const b = traceScene(proj([

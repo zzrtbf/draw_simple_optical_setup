@@ -1091,6 +1091,11 @@ export function Stage({ svgRef }: { svgRef: React.RefObject<SVGSVGElement | null
             <BeamView key={b.id} beam={b} selected={selected.has(b.id)} zoom={zoom} theme={theme} />
           ))}
 
+          {/* traced light sits *under* the parts, so a reflection stops at the
+              mirror coating instead of painting over the hardware; the beam is
+              still fully visible in the gaps */}
+          <AutoBeams project={project} />
+
           {project.items.map((it) => (
             <ItemView
               key={it.id}
@@ -1101,10 +1106,6 @@ export function Stage({ svgRef }: { svgRef: React.RefObject<SVGSVGElement | null
               theme={theme}
             />
           ))}
-
-          {/* light traced through the scene, above the parts so a beam crossing a
-              lens or a splitter cube stays visible */}
-          <AutoBeams project={project} />
 
           {/* labels: always upright, above the parts */}
           {project.items

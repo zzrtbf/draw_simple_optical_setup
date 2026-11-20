@@ -1,4 +1,4 @@
-# Optical Bench 状态：2026-11-08
+# Optical Bench 状态：2026-11-20
 
 ## 目标
 
@@ -7,9 +7,9 @@
 
 ## 当前阶段
 
-**v1.3.2 收尾完成，没有正在开发的功能。** 源码、双 README、MIT、CI、`.app`/`.dmg` 都在，
-已推到 GitHub `origin/main`（工作区干净）。本文件与 `LOG.md` 也已入库，两台机器靠 git 同步。
-功能上暂不推进（见末尾）。
+**v1.3.3 完成，没有正在开发的功能。** v1.3.3 只动了三件事：物镜改用工作距离、分束器 T/R 手动、
+自动光路下沉到器件图层下方。源码、双 README、MIT、CI、`.app`/`.dmg` 都在，已推到 GitHub
+`origin/main`。本文件与 `LOG.md` 已入库，两台机器靠 git 同步。功能上暂不推进（见末尾）。
 
 ## 已定决策
 
@@ -29,22 +29,30 @@
 - **二进制走 GitHub Releases**，`dist/`、`build/`、`.dmg` 不进 git（撑大历史且无法 review）。
 - **许可拆分**：代码 MIT，器件图形 CC BY-NC 3.0。否决整体 MIT——无权替第三方图形改许可。
 - **BS 的透射/反射两支继承同一 $q$**，所以同色、同发散。这是用户明确要求的行为。
+- **物镜用工作距离 WD，而不是焦距 + 光心居中**（2026-11-20 用户定）。等效薄透镜放在筒身前端
+  出射窗口（`faceAt = 46.5/48`，默认相对转轴 +22.5 mm），焦距取 WD，所以准直入射时汇聚点正好在
+  窗口外 WD。旧做法把薄透镜放在镜筒中心，焦点会落在物镜内部；已删掉。
+- **自动光路画在器件图层下方**（2026-11-20 用户定）。反射光停在反射镜/PBS 的轮廓处，不再盖住器件；
+  代价是穿过物镜筒身的那段光被筒身遮住（符合实际观感）。手绘光束同样在器件下方。
+- **分束比手动 T，不做偏振**。`split` = 透射比 T，反射 1−T；支路亮度按同一光源归一化
+  （50/50 与旧外观一致，0/100 % 时另一支不画）。PBS 仍是几何分光，没有 Jones 向量。
 - **Playwright 回归不进 CI**（要下载浏览器，每个 job 多几分钟）；CI 只做 `npm ci` → `typecheck` →
   `build`，macOS 与 Windows 各跑一遍，防止只在 Mac 开发时 Windows 线悄悄烂掉。
 
 ## 生效参数
 
-- 版本 `1.3.2`（build 10302），唯一来源 `package.json` ｜ ad-hoc 签名，arm64，最低 macOS 11
-- 产物：`build/Optical Bench.app` 952 KB（前端资源 448 KB）｜`build/Optical Bench 1.3.2.dmg` 518 KB
-- 冷启动到窗口可见 196 / 207 ms（构建后首次 516–770 ms）｜常驻约 99 MB RSS
-- 回归测试 26（交互）+ 25（v1.1 功能）+ 27（光学引擎）= **78 项**
+- 版本 `1.3.3`（build 10303），唯一来源 `package.json` ｜ ad-hoc 签名，arm64，最低 macOS 11
+- 产物：`build/Optical Bench.app` 952 KB（前端资源 448 KB）｜`build/Optical Bench 1.3.3.dmg` 732 KB
+- 冷启动到窗口可见 196 / 207 ms（v1.3.2 实测；v1.3.3 未重测，只改绘制与面板）｜常驻约 99 MB RSS
+- 回归测试 27（交互）+ 29（v1.1 功能）+ 34（光学引擎）= **90 项**（Chromium 与 WebKit 均通过）
+- 物镜默认 WD 15 mm；出射窗口相对转轴 +22.5 mm（48 mm 筒身的前端面）
 - 端口 5180（`scripts/serve.mjs` 与 `vite` 同端口）｜缩放 3 %–6000 %（1 px/mm = 100 %）
 - 孔距 25 mm ｜ `z` 默认 25.4 mm（桌面以上）｜工程 schema `optical-setup/1`、3D 导出 `optical-bench/scene3d/1`
 
 ## 关键文件与入口
 
 - `src/store.ts` — zustand：工程、选择、视图、撤销快照栈
-- `src/lib/optics.ts` · `opticsMap.ts` · `spectrum.ts` — 光路追迹、器件→光学行为、波长配色（v1.3.2 核心）
+- `src/lib/optics.ts` · `opticsMap.ts` · `spectrum.ts` — 光路追迹、器件→光学行为、波长配色（v1.3.2–1.3.3 核心）
 - `src/components/Stage.tsx` — 画布与全部指针交互；`Inspector.tsx` — 右侧属性面板
 - `src/lib/export.ts` · `native.ts` · `platform.ts` — 导出管线、原生桥、⌘/Ctrl 文案
 - `macos/src/{main,NativeBridge,WebSchemeHandler}.swift` + `scripts/build-mac-app.sh` — 原生壳与打包
@@ -59,7 +67,9 @@
   工作没有合并进本仓库。合并前不要按「从来没做过」重头规划。
 - `.app` arm64 only、未签名未公证（外传需 `xattr -dr com.apple.quarantine`）、无自动更新。
 - 光路模型是 2D 傍轴：>20–30° 只有几何近似；薄透镜无像差；凹面镜按平面处理；**无偏振、无干涉**
-  （PBS 与 BS 一样 50/50，`split` 字段已留未开放）；无光阑衍射。
+  （PBS 与 BS 一样按几何分光，T/R 手动给，没有 Jones 向量）；无光阑衍射。
+- **物镜 = 出射窗口处的单一薄透镜**：只保证准直入射时焦点在窗口外 WD；非准直入射只是傍轴近似。
+  有效面按器件高度（30 mm）判断，不是画出来的那个 11 mm 小窗口。
 - 光束是独立线段、不会在器件处自动断开，一条光路要画成几段（多段串成一条在计划里）。
 - 冲突检测只按矩形足迹（OBB + 分离轴），不考虑器件高度；镜架等支架对光透明。
 - **GitHub Releases 上还没有二进制**，`.dmg` 只在本地 `build/` 里。
@@ -73,7 +83,7 @@
    （Tauri 既然已跑通，继续走它可能比从零写 WebView2 壳划算，文档现在推荐 A 是当初只做纸面比较的结论）。
 2. Windows WebView2 原生壳（在 `windows/src/` 实现 `src/lib/native.ts` 的五个 op，
    补 `windows/build-win-app.ps1`，`.bat` 保留）——若不走 Tauri 则选这条。
-3. 首次发版（`git tag v1.3.2` + `gh release create`，注意 `gh` 尚未安装）。
+3. 首次发版（`git tag v1.3.3` + `gh release create`，注意 `gh` 尚未安装）。
 
 ## 坑（不要重复做）
 

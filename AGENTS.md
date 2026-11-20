@@ -11,7 +11,7 @@
 | 装依赖 | `npm install` |
 | 开发（热更新） | `npm run dev` → http://127.0.0.1:5180 |
 | 类型检查 / 构建 | `npm run typecheck` · `npm run build` |
-| 回归测试 | 先起 `npm run dev`，另开终端 `npm run test:ui`（26+25+27 = 78 项） |
+| 回归测试 | 先起 `npm run dev`，另开终端 `npm run test:ui`（27+29+34 = 90 项） |
 | 只跑光学引擎 | `npm run test:optics` |
 | 换浏览器引擎 | 前缀 `PW_ENGINE=webkit`（Safari 同引擎，判断 Safari 退化的硬指标） |
 | macOS 打包 | `npm run app:build` → `build/Optical Bench.app` + `.dmg`；`-- --skip-web` 只重编 Swift |
@@ -32,9 +32,12 @@
 - 世界坐标 **1 单位 = 1 mm**，y 轴向下（SVG 习惯）；孔阵间距 25 mm，孔坐标是 25 的整数倍。
 - `z` = 光轴高度（桌面以上，默认 25.4 mm）；`rot` = 绕 z 轴角度；工程文件 schema `optical-setup/1`。
 - 自动光路 = 2D 傍轴高斯光束：自由传播 $q \to q + d$，薄透镜 $1/q' = 1/q - 1/f$，平面镜只改方向不改 $q$，
-  分束器两支继承同一 $q$。完整模型、器件朝向表与限制见 `docs/AUTO-BEAMS.md`。
+  分束器两支继承同一 $q$、功率按面板里的 T/R 分配。完整模型、器件朝向表与限制见 `docs/AUTO-BEAMS.md`。
+- **物镜**（`x-objective`）的等效薄透镜在本地 **+x 前端窗口**（默认相对转轴 +22.5 mm，不是镜筒中心），
+  焦距 = 面板里的**工作距离 WD**：准直入射时汇聚点在窗口外 WD 处。
 - 器件朝向：激光/光纤耦合器沿本地 **+x** 出射；镜、透镜、探测器有效面是本地 **y**；BS 有效面是画出的对角线；
   镜架等支架对光**透明**（要挡光就放 Beam Dump）。
+- 自动光路画在**器件图层下方**（`Stage.tsx` 里 `AutoBeams` 在 items 之前）；手绘光束也在器件下方。
 
 ## 许可
 

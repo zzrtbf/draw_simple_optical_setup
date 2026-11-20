@@ -43,6 +43,8 @@ const state = () =>
         labelOffset: i.labelOffset,
         snap: i.snap,
         showLabel: i.showLabel,
+        workingDistance: i.workingDistance,
+        split: i.split,
       })),
       beams: s.project.beams.map((b) => ({ id: b.id, x1: b.x1, y1: b.y1, x2: b.x2, y2: b.y2, snap: b.snap })),
       board: s.project.board,
@@ -60,8 +62,37 @@ await objectiveImg.first().click();
 await page.waitForTimeout(200);
 let st = await state();
 check('objective can be placed', st.items.some((i) => i.lib === 'x-objective'));
+
+const wdInput = page
+  .locator('.numfield')
+  .filter({ has: page.locator('.nf-label', { hasText: /^WD$/ }) })
+  .locator('input');
+check('objective inspector exposes a working distance', (await wdInput.count()) === 1);
+await wdInput.fill('35');
+await page.waitForTimeout(200);
+st = await state();
+const obj = st.items.find((i) => i.lib === 'x-objective');
+check('objective working distance can be typed', Math.abs(obj.workingDistance - 35) < 1e-6, `${obj.workingDistance}`);
 await page.keyboard.press('Delete');
 await page.waitForTimeout(100);
+
+/* ---- beamsplitter: manual transmission ratio ---- */
+await page.evaluate(() => window.__editor.getState().select(['s5']));
+await page.waitForTimeout(250);
+const tInput = page
+  .locator('.numfield')
+  .filter({ has: page.locator('.nf-label', { hasText: /^T$/ }) })
+  .locator('input');
+check('splitter inspector exposes a transmission ratio', (await tInput.count()) === 1);
+await tInput.fill('90');
+await page.waitForTimeout(250);
+st = await state();
+check(
+  'transmission ratio can be typed',
+  Math.abs(st.items.find((i) => i.id === 's5').split - 0.9) < 1e-6,
+  `${st.items.find((i) => i.id === 's5').split}`,
+);
+await page.evaluate(() => window.__editor.getState().select([]));
 
 /* ---- white bench theme ---- */
 await page.locator('.segmented button', { hasText: 'White bench' }).first().click();

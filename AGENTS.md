@@ -11,7 +11,7 @@
 | 装依赖 | `npm install` |
 | 开发（热更新） | `npm run dev` → http://127.0.0.1:5180 |
 | 类型检查 / 构建 | `npm run typecheck` · `npm run build` |
-| 回归测试 | 先起 `npm run dev`，另开终端 `npm run test:ui`（27+35+38 = 100 项） |
+| 回归测试 | 先起 `npm run dev`，另开终端 `npm run test:ui`（27+36+38 = 101 项） |
 | 只跑光学引擎 | `npm run test:optics` |
 | 换浏览器引擎 | 前缀 `PW_ENGINE=webkit`（Safari 同引擎，判断 Safari 退化的硬指标） |
 | macOS 打包 | `npm run app:build` → `build/Optical Bench.app` + `.dmg`；`-- --skip-web` 只重编 Swift |
@@ -42,7 +42,7 @@
 - 自动光路画在**器件图层下方**（`Stage.tsx` 里 `AutoBeams` 在 items 之前）；手绘光束也在器件下方。
 - **自动 / 手绘**：光源 `autoBeams !== false` 时自动追迹；`bakeSourceBeams()` 把它转成带 `bakedFrom`
   的普通 Beam 并置 `autoBeams: false`。`bakedFrom` 的光束在光源回到自动模式时隐藏（`lib/beams.ts`），
-  这样两种模式能来回切而不重复；可见光束一律走 `visibleBeams()`（渲染/状态栏/导出/3D）。
+  这样两种模式能来回切而不重复；可见光束一律走 `visibleBeams()`（渲染/选择/状态栏/导出/3D）。
 
 ## 许可
 

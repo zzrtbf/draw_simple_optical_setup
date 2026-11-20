@@ -15,11 +15,12 @@
   有损：Gaussian 包络变直线锥度，焦点位置与器件面宽度保留。
 - 切换：`autoBeams=false` 时 `traceScene` 直接跳过这个光源；它的 `bakedFrom` 光束只在手动模式显示。
   `src/lib/beams.ts` 的 `visibleBeams()/isBeamHidden()` 统一负责「哪些光束现在算数」，被画布渲染、
-  选择手柄、框选、状态栏、导出 bbox、3D 场景、fitView 共用——否则隐藏的副本会偷偷影响导出和视野。
+  选择手柄、框选、全选、状态栏、导出 bbox、3D 场景、fitView 共用——否则隐藏的副本会偷偷影响导出和视野。
 - 交互：LIGHT SOURCE 面板加 `Auto beams` 开关与 `Convert to hand-drawn` 按钮；转换后选中新光束并 toast。
-  切回自动时如果选中的是刚被隐藏的副本，选择会清掉（store 的 `setSourceAutoBeams`）。
-- 测试：光学 35→38（焦点位置、切段数、90:10 亮度比）；v1.1 29→35（开关、默认开、关掉后不追迹、
-  转手绘、切回自动后副本隐藏）；交互 27 不变。总计 100 项，Chromium 与 WebKit 各跑一遍全过。
+  切回自动时如果选中的是刚被隐藏的副本，选择会清掉（store 的 `setSourceAutoBeams`）。对同一光源再转一次
+  会替换旧快照而不是叠加（当作「刷新」用）。
+- 测试：光学 35→38（焦点位置、切段数、90:10 亮度比）；v1.1 29→36（开关、默认开、关掉后不追迹、
+  转手绘、切回自动后副本隐藏）；交互 27 不变。总计 101 项，Chromium 与 WebKit 各跑一遍全过。
 - 版本 1.3.5（build 10305）；`.app` 956 KB、`.dmg` 516 KB；冷启动未重测。文档同步：AUTO-BEAMS 的
   「自动 / 手绘」一节、README 中英、AGENTS 的约定、MACOS-APP 版本记录。
 - 结论：完成并入库。没删自动追迹——它是检查工具；手绘/烘焙是可退出的出图层。 [会话][git]

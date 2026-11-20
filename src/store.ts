@@ -263,7 +263,9 @@ export const useEditor = create<EditorState>()((set, get) => {
       }),
 
     selectAll: () =>
-      set((s) => ({ selection: [...s.project.items.map((i) => i.id), ...s.project.beams.map((b) => b.id)] })),
+      set((s) => ({
+        selection: [...s.project.items.map((i) => i.id), ...visibleBeams(s.project).map((b) => b.id)],
+      })),
 
     clearSelection: () => set({ selection: [] }),
 
@@ -422,13 +424,17 @@ export const useEditor = create<EditorState>()((set, get) => {
       if (traced.length === 0) return;
       const baked = bakeTracedBeams(traced, item);
       if (baked.length === 0) return;
+      const replaced = s.project.beams.some((b) => b.bakedFrom === sourceId);
       record((proj) => ({
         ...proj,
         items: proj.items.map((it) => (it.id === sourceId ? ({ ...it, autoBeams: false } as Item) : it)),
-        beams: [...proj.beams, ...baked],
+        // a second bake refreshes the snapshot instead of stacking a duplicate
+        beams: [...proj.beams.filter((b) => b.bakedFrom !== sourceId), ...baked],
       }));
       set({ selection: baked.map((b) => b.id), tool: 'select' });
-      toast(`${baked.length} beam${baked.length === 1 ? '' : 's'} converted to hand-drawn`);
+      toast(
+        `${baked.length} beam${baked.length === 1 ? '' : 's'} ${replaced ? 'refreshed' : 'converted'} as hand-drawn`,
+      );
     },
 
     setSourceAutoBeams: (sourceId, on) => {

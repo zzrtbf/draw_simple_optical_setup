@@ -145,6 +145,16 @@ check(
   hiddenBaked === bakedIds.length,
   `${hiddenBaked}/${bakedIds.length} hidden`,
 );
+
+await page.locator('button', { hasText: 'Convert to hand-drawn' }).click();
+await page.waitForTimeout(350);
+st = await state();
+const bakedAgain = st.beams.filter((b) => b.bakedFrom === 's1');
+check(
+  're-baking refreshes instead of stacking',
+  bakedAgain.length === bakedIds.length,
+  `${bakedAgain.length} vs ${bakedIds.length}`,
+);
 await page.evaluate(() => window.__editor.getState().select([]));
 
 /* ---- white bench theme ---- */

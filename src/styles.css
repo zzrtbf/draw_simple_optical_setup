@@ -13,9 +13,9 @@
   --text-2: #93a7bd;
   --dim: #64788f;
   --dim-2: #46566a;
-  --accent: #38e1c4;
-  --accent-soft: rgba(56, 225, 196, 0.12);
-  --accent-line: rgba(56, 225, 196, 0.45);
+  --accent: #3b6cff;
+  --accent-soft: rgba(59, 108, 255, 0.12);
+  --accent-line: rgba(59, 108, 255, 0.45);
   --danger: #ff5b76;
   --danger-soft: rgba(255, 91, 118, 0.12);
   --radius: 7px;
@@ -211,7 +211,7 @@ select {
   gap: 6px;
   height: 30px;
   padding: 0 12px;
-  background: linear-gradient(180deg, rgba(56, 225, 196, 0.16), rgba(56, 225, 196, 0.08));
+  background: linear-gradient(180deg, rgba(59, 108, 255, 0.16), rgba(59, 108, 255, 0.08));
   border: 1px solid var(--accent-line);
   border-radius: 7px;
   color: var(--accent);
@@ -220,7 +220,7 @@ select {
   letter-spacing: 0.02em;
 }
 .btn-primary:hover {
-  background: rgba(56, 225, 196, 0.22);
+  background: rgba(59, 108, 255, 0.22);
 }
 
 .export-wrap {
@@ -626,7 +626,7 @@ select {
   height: 7px;
   border-radius: 2px;
   background: var(--accent);
-  box-shadow: 0 0 8px rgba(56, 225, 196, 0.7);
+  box-shadow: 0 0 8px rgba(59, 108, 255, 0.7);
 }
 .dot.beam {
   background: #ff5b76;
@@ -793,7 +793,7 @@ select {
   transition: transform 0.15s, background 0.15s;
 }
 .toggle.is-on .toggle-track {
-  background: rgba(56, 225, 196, 0.18);
+  background: rgba(59, 108, 255, 0.18);
   border-color: var(--accent-line);
 }
 .toggle.is-on .toggle-knob {

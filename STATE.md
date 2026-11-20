@@ -7,8 +7,8 @@
 
 ## 当前阶段
 
-**v1.3.3 完成，没有正在开发的功能。** v1.3.3 只动了三件事：物镜改用工作距离、分束器 T/R 手动、
-自动光路下沉到器件图层下方。源码、双 README、MIT、CI、`.app`/`.dmg` 都在，已推到 GitHub
+**v1.3.4 完成，没有正在开发的功能。** v1.3.4 只把 UI 强调色从青绿换成深蓝；v1.3.3 做的是物镜工作距离、
+分束器 T/R 手动、自动光路下沉。源码、双 README、MIT、CI、`.app`/`.dmg` 都在，已推到 GitHub
 `origin/main`。本文件与 `LOG.md` 已入库，两台机器靠 git 同步。功能上暂不推进（见末尾）。
 
 ## 已定决策
@@ -36,14 +36,18 @@
   代价是穿过物镜筒身的那段光被筒身遮住（符合实际观感）。手绘光束同样在器件下方。
 - **分束比手动 T，不做偏振**。`split` = 透射比 T，反射 1−T；支路亮度按同一光源归一化
   （50/50 与旧外观一致，0/100 % 时另一支不画）。PBS 仍是几何分光，没有 Jones 向量。
+- **UI 强调色 = 深蓝 `#3b6cff`**（2026-11-20 用户定，原为青绿 `#38e1c4`）。画布 SVG 属性读不到 CSS 变量，
+  所以只在两处维护：`src/lib/theme.ts` 的 `UI_ACCENT` 与 `styles.css` 的 `--accent` / `--accent-soft` /
+  `--accent-line`，改色必须同步。浅色画布的原点十字线用 `#1d4ed8`。画布内容色（块色板、文字色板、
+  示例布局的块）不跟着变。
 - **Playwright 回归不进 CI**（要下载浏览器，每个 job 多几分钟）；CI 只做 `npm ci` → `typecheck` →
   `build`，macOS 与 Windows 各跑一遍，防止只在 Mac 开发时 Windows 线悄悄烂掉。
 
 ## 生效参数
 
-- 版本 `1.3.3`（build 10303），唯一来源 `package.json` ｜ ad-hoc 签名，arm64，最低 macOS 11
-- 产物：`build/Optical Bench.app` 952 KB（前端资源 448 KB）｜`build/Optical Bench 1.3.3.dmg` 732 KB
-- 冷启动到窗口可见 196 / 207 ms（v1.3.2 实测；v1.3.3 未重测，只改绘制与面板）｜常驻约 99 MB RSS
+- 版本 `1.3.4`（build 10304），唯一来源 `package.json` ｜ ad-hoc 签名，arm64，最低 macOS 11
+- 产物：`build/Optical Bench.app` 952 KB（前端资源 448 KB）｜`build/Optical Bench 1.3.4.dmg` 732 KB
+- 冷启动到窗口可见 196 / 207 ms（v1.3.2 实测；v1.3.3 / 1.3.4 未重测）｜常驻约 99 MB RSS
 - 回归测试 27（交互）+ 29（v1.1 功能）+ 35（光学引擎）= **91 项**（Chromium 与 WebKit 均通过）
 - 物镜默认 WD 15 mm；出射窗口相对转轴 +22.5 mm（48 mm 筒身的前端面）
 - 端口 5180（`scripts/serve.mjs` 与 `vite` 同端口）｜缩放 3 %–6000 %（1 px/mm = 100 %）
@@ -54,7 +58,7 @@
 - `src/store.ts` — zustand：工程、选择、视图、撤销快照栈
 - `src/lib/optics.ts` · `opticsMap.ts` · `spectrum.ts` — 光路追迹、器件→光学行为、波长配色（v1.3.2–1.3.3 核心）
 - `src/components/Stage.tsx` — 画布与全部指针交互；`Inspector.tsx` — 右侧属性面板
-- `src/lib/export.ts` · `native.ts` · `platform.ts` — 导出管线、原生桥、⌘/Ctrl 文案
+- `src/lib/theme.ts` — 画布配色与 `UI_ACCENT`；`export.ts` · `native.ts` · `platform.ts` — 导出管线、原生桥、⌘/Ctrl 文案
 - `macos/src/{main,NativeBridge,WebSchemeHandler}.swift` + `scripts/build-mac-app.sh` — 原生壳与打包
 - 文档：`docs/AUTO-BEAMS.md`（光路模型与限制）· `docs/PLATFORMS.md`（双平台、桥协议、发版）
   · `docs/MACOS-APP.md`（打包实测与版本记录）
@@ -83,7 +87,7 @@
    （Tauri 既然已跑通，继续走它可能比从零写 WebView2 壳划算，文档现在推荐 A 是当初只做纸面比较的结论）。
 2. Windows WebView2 原生壳（在 `windows/src/` 实现 `src/lib/native.ts` 的五个 op，
    补 `windows/build-win-app.ps1`，`.bat` 保留）——若不走 Tauri 则选这条。
-3. 首次发版（`git tag v1.3.3` + `gh release create`，注意 `gh` 尚未安装）。
+3. 首次发版（`git tag v1.3.4` + `gh release create`，注意 `gh` 尚未安装）。
 
 ## 坑（不要重复做）
 

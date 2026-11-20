@@ -1,4 +1,4 @@
-# macOS 原生应用（v1.3.3）
+# macOS 原生应用（v1.3.4）
 
 `Optical Bench.app` 是这份编辑器的桌面版：一个原生 Swift 外壳 + 系统自带 `WKWebView` 渲染，
 前端仍是同一份 `dist/`。**不打包浏览器内核**，所以体积只有几百 KB。
@@ -9,11 +9,11 @@
 | --- | --- |
 | `.app` 体积 | **952 KB**（其中前端资源 448 KB） |
 | `.dmg` 体积 | **732 KB** |
-| 冷启动到窗口可见 | **196–241 ms**（v1.3.2 实测 196 / 207 ms；v1.3.3 只改了绘制与面板，未重测） |
+| 冷启动到窗口可见 | **196–241 ms**（v1.3.2 实测 196 / 207 ms；v1.3.3 / v1.3.4 未重测） |
 | 首次启动（构建后第一回） | 616–770 ms（dyld 缓存与 LaunchServices 首次注册） |
 | 常驻内存 | 约 99 MB RSS（主进程；网页渲染在 WebKit 独立进程里，由系统共享） |
 | 架构 / 最低系统 | arm64 / macOS 11 |
-| 版本 | 1.3.3（build 10303），ad-hoc 签名 |
+| 版本 | 1.3.4（build 10304），ad-hoc 签名 |
 
 对照：现在这条 Safari 路径（`Optical Bench.command`）要先把 Node 服务拉起来再开浏览器窗口，
 冷启动 2–4 秒，且带地址栏。
@@ -27,7 +27,7 @@
    npm run app:build -- --skip-web   # 只重编 Swift，复用现有 dist
    ```
 
-   产物在 `build/`：`Optical Bench.app`、`Optical Bench 1.3.3.dmg`。
+   产物在 `build/`：`Optical Bench.app`、`Optical Bench 1.3.4.dmg`。
 
 2. **首次安装**：把 `build/Optical Bench.app` 拖进 `/Applications`（或直接从 `build/` 里双击）。
    dmg 双击挂载后同样拖过去即可。
@@ -97,6 +97,14 @@ src/lib/native.ts            # 前端侧的桥接封装（浏览器里全部退�
   `OB_DEBUG=1 open -a "Optical Bench"` 然后在窗口里右键 → 检查元素。
 
 ## 版本记录
+
+**v1.3.4**
+- UI 强调色由青绿（`#38e1c4`）换成**深蓝**（`#3b6cff`）：选中框 / 缩放与旋转手柄、工具激活态、
+  分组标题、开关、Export 按钮、画布原点十字线都跟着变；浅色画布上的原点用深一点的 `#1d4ed8`。
+  画布内容色（自定义块、块色板、文字色板）没有动——那是用户画的内容，不是界面色。
+- 强调色只维护两处：`src/lib/theme.ts` 的 `UI_ACCENT`（画布 SVG 的属性）和 `styles.css` 的 `--accent`
+  （界面 chrome），改色时同步；README 的深/浅两张截图已按新配色重拍。
+- 版本 1.3.4（build 10304）；`.app` 952 KB、`.dmg` 732 KB；回归 91 项不变；冷启动未重测。
 
 **v1.3.3**
 - 物镜（`x-objective`）改用**工作距离 WD** 参数：薄透镜放在筒身前端（出射窗口）而不是镜筒中心，

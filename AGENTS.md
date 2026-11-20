@@ -26,6 +26,8 @@
   + 在 `src/model/catalog.ts` 加一行名字/分类。
 - **中英 README 必须同步改**：`README.md` 与 `README.en.md` 一一对应。
 - **原生能力只经 `src/lib/native.ts`**（`window.__ob` 五条 op），浏览器里全部退化成 no-op。
+- **UI 强调色两处同步**：`src/lib/theme.ts` 的 `UI_ACCENT`（画布 SVG 属性）与 `styles.css` 的 `--accent` /
+  `--accent-soft` / `--accent-line`（chrome）。画布内容色（块/文字色板）不跟强调色走。
 
 ## 物理与坐标约定
 

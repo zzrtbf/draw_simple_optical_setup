@@ -19,7 +19,7 @@ import {
   type Frame,
   type Pt,
 } from '../lib/geom';
-import { THEMES } from '../lib/theme';
+import { THEMES, UI_ACCENT } from '../lib/theme';
 import { useConflictIds } from '../lib/conflicts';
 import { AutoBeams } from './AutoBeams';
 import { IS_MAC } from '../lib/platform';
@@ -101,7 +101,7 @@ const ItemView = React.memo(function ItemView({
           height={f.h}
           transform={`rotate(${f.rot} ${f.cx} ${f.cy})`}
           fill="none"
-          stroke="#38e1c4"
+          stroke={UI_ACCENT}
           strokeWidth={1.4 * sw}
           data-ui="1"
           style={{ pointerEvents: 'none' }}
@@ -389,7 +389,7 @@ const BeamView = React.memo(function BeamView({
           y1={beam.y1}
           x2={beam.x2}
           y2={beam.y2}
-          stroke="#38e1c4"
+          stroke={UI_ACCENT}
           strokeWidth={1 / zoom}
           strokeDasharray={`${5 / zoom} ${4 / zoom}`}
           data-ui="1"
@@ -416,7 +416,7 @@ function BeamHandles({ beam, zoom }: { beam: Beam; zoom: number }) {
               width={8 / zoom}
               height={8 / zoom}
               fill="#0b1118"
-              stroke="#38e1c4"
+              stroke={UI_ACCENT}
               strokeWidth={1.4 / zoom}
               style={{ cursor: 'crosshair' }}
             />
@@ -1134,9 +1134,9 @@ export function Stage({ svgRef }: { svgRef: React.RefObject<SVGSVGElement | null
               y={Math.min(marquee.a.y, marquee.b.y)}
               width={Math.abs(marquee.a.x - marquee.b.x)}
               height={Math.abs(marquee.a.y - marquee.b.y)}
-              fill="#38e1c4"
+              fill={UI_ACCENT}
               fillOpacity={0.07}
-              stroke="#38e1c4"
+              stroke={UI_ACCENT}
               strokeWidth={1 * sw}
               strokeDasharray={`${4 * sw} ${4 * sw}`}
               style={{ pointerEvents: 'none' }}
@@ -1150,18 +1150,18 @@ export function Stage({ svgRef }: { svgRef: React.RefObject<SVGSVGElement | null
                 y1={draft.a.y}
                 x2={draft.b.x}
                 y2={draft.b.y}
-                stroke="#38e1c4"
+                stroke={UI_ACCENT}
                 strokeWidth={3}
                 strokeOpacity={0.5}
                 strokeDasharray={`${6 / zoom} ${5 / zoom}`}
               />
-              <circle cx={draft.a.x} cy={draft.a.y} r={3 / zoom} fill="#38e1c4" />
+              <circle cx={draft.a.x} cy={draft.a.y} r={3 / zoom} fill={UI_ACCENT} />
               <text
                 x={(draft.a.x + draft.b.x) / 2}
                 y={(draft.a.y + draft.b.y) / 2 - 6 / zoom}
                 textAnchor="middle"
                 fontSize={11 / zoom}
-                fill="#38e1c4"
+                fill={UI_ACCENT}
                 fontFamily={FONT_STACK}
               >
                 {Math.round(Math.hypot(draft.b.x - draft.a.x, draft.b.y - draft.a.y))} mm
@@ -1212,7 +1212,7 @@ function ItemHandles({ item, zoom }: { item: Exclude<Item, TextItem>; zoom: numb
             height={s * 2}
             rx={s * 0.35}
             fill="#0b1118"
-            stroke="#38e1c4"
+            stroke={UI_ACCENT}
             strokeWidth={1.4 / zoom}
             style={{ cursor: `${c.key}-resize` }}
           />
@@ -1222,7 +1222,7 @@ function ItemHandles({ item, zoom }: { item: Exclude<Item, TextItem>; zoom: numb
           y1={-f.h / 2}
           x2={0}
           y2={-f.h / 2 - rotArm}
-          stroke="#38e1c4"
+          stroke={UI_ACCENT}
           strokeWidth={1.2 / zoom}
           style={{ pointerEvents: 'none' }}
         />
@@ -1232,7 +1232,7 @@ function ItemHandles({ item, zoom }: { item: Exclude<Item, TextItem>; zoom: numb
           cy={-f.h / 2 - rotArm}
           r={s}
           fill="#0b1118"
-          stroke="#38e1c4"
+          stroke={UI_ACCENT}
           strokeWidth={1.4 / zoom}
           style={{ cursor: 'grab' }}
         />
@@ -1259,7 +1259,7 @@ function TextHandles({ item, zoom }: { item: TextItem; zoom: number }) {
             height={s * 2}
             rx={s * 0.35}
             fill="#0b1118"
-            stroke="#38e1c4"
+            stroke={UI_ACCENT}
             strokeWidth={1.4 / zoom}
             style={{ cursor: `${c.key}-resize` }}
           />
@@ -1269,7 +1269,7 @@ function TextHandles({ item, zoom }: { item: TextItem; zoom: number }) {
           y1={-f.h / 2}
           x2={0}
           y2={-f.h / 2 - rotArm}
-          stroke="#38e1c4"
+          stroke={UI_ACCENT}
           strokeWidth={1.2 / zoom}
           style={{ pointerEvents: 'none' }}
         />
@@ -1279,7 +1279,7 @@ function TextHandles({ item, zoom }: { item: TextItem; zoom: number }) {
           cy={-f.h / 2 - rotArm}
           r={s}
           fill="#0b1118"
-          stroke="#38e1c4"
+          stroke={UI_ACCENT}
           strokeWidth={1.4 / zoom}
           style={{ cursor: 'grab' }}
         />

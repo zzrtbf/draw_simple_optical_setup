@@ -17,7 +17,7 @@
 - 文档：README 的深/浅两张截图按新配色重拍（1600×950、`?demo`）；MACOS-APP 版本记录与 AGENTS 的
   「强调色两处同步」约定同步更新。
 - 测试：91 项在 Chromium 与 WebKit 各跑一遍全过，typecheck 通过。
-- 版本：1.3.4（build 10304）；`.app` 952 KB、`.dmg` 732 KB；冷启动未重测。
+- 版本：1.3.4（build 10304）；`.app` 952 KB、`.dmg` 732 KB；冷启动未重测。 [会话][git]
 
 ## 2026-11-20 v1.3.3：物镜工作距离、T/R 分束、光路下沉
 
@@ -40,7 +40,7 @@
 - 产物：`.app` 952 KB、`.dmg` 732 KB、build 10303；冷启动未重测，沿用 v1.3.2 的 196/207 ms 记录。
 - 文档：AUTO-BEAMS（物镜模型、T/R、图层、限制）、中英 README、MACOS-APP 版本记录、AGENTS 约定、
   PLATFORMS 发版示例、STATE。
-- 结论：完成并入库。下一步仍按 2026-11-08 定的三条候选（Windows Tauri 合并 / WebView2 壳 / 首次发版）。
+- 结论：完成并入库。下一步仍按 2026-11-08 定的三条候选（Windows Tauri 合并 / WebView2 壳 / 首次发版）。 [会话][git]
 
 ## 2026-11-08 STATE.md / LOG.md 改为入库
 

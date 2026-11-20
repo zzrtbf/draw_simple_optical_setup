@@ -7,15 +7,15 @@
 
 ## 当前阶段
 
-**v1.3.4 完成，没有正在开发的功能。** v1.3.4 只把 UI 强调色从青绿换成深蓝；v1.3.3 做的是物镜工作距离、
-分束器 T/R 手动、自动光路下沉。源码、双 README、MIT、CI、`.app`/`.dmg` 都在，已推到 GitHub
-`origin/main`。本文件与 `LOG.md` 已入库，两台机器靠 git 同步。功能上暂不推进（见末尾）。
+**v1.3.4 完成，没有正在开发的功能。** 最近两版：v1.3.3 = 物镜工作距离 + BS 透射比 + 光路下沉；
+v1.3.4 = UI 强调色青绿 → 深蓝。源码、双 README、CI、`.app`/`.dmg` 都已推到 `origin/main`；
+本文件与 `LOG.md` 入库，两台机器靠 git 同步。功能上暂不推进（见末尾）。
 
 ## 已定决策
 
 - **`STATE.md` / `LOG.md` 进 git，两台机器用仓库同步**（2026-11-08 用户改，推翻 project-memory 的
-  「只留本地」默认）。理由：Windows 那台电脑也要接着开发，两边都会写这两个文件，靠 git 才接得上。
-  代价是要守同步纪律（开工 `pull --rebase`、收工 push；`LOG.md` 冲突两边都留），见 `AGENTS.md`。
+  「只留本地」默认）：Windows 那台也要接着开发。代价是同步纪律（开工 `pull --rebase`、收工 push；
+  `LOG.md` 冲突两边都留），见 `AGENTS.md`。
 - **画布是 SVG DOM，不是 canvas。** 导出 = 克隆当前 `<svg>` → 剥 `data-ui` → 重设 viewBox → 栅格化，
   所以所见即所得、SVG 导出天然矢量。否决 canvas（矢量导出要另写一遍绘制，等于两份真相）。
 - **macOS 壳用 Swift + WKWebView**（`macos/`），不打包浏览器内核。否决 Tauri（要装 400 MB Rust 工具链、
@@ -80,32 +80,21 @@
 
 ## 下一步
 
-**暂不推进新功能**（2026-11-08 用户定）。真要动时先问方向，候选有三个：
+**等用户定方向**（2026-11-08 起不推进新功能）。三条候选：
 
-1. **合并 Windows 侧已有的 Tauri 打包工作**——用户 2026-11-08 确认：打包在另一台 Windows 电脑上
-   成功过，机器不在手边，**等机器可取回时再处理**。届时一并重新评估 `docs/PLATFORMS.md` 的推荐
-   （Tauri 既然已跑通，继续走它可能比从零写 WebView2 壳划算，文档现在推荐 A 是当初只做纸面比较的结论）。
-2. Windows WebView2 原生壳（在 `windows/src/` 实现 `src/lib/native.ts` 的五个 op，
-   补 `windows/build-win-app.ps1`，`.bat` 保留）——若不走 Tauri 则选这条。
-3. 首次发版（`git tag v1.3.4` + `gh release create`，注意 `gh` 尚未安装）。
+1. **合并 Windows 侧已有的 Tauri 打包工作**——等那台 Windows 电脑可取回；届时重评
+   `docs/PLATFORMS.md` 的 WebView2 推荐（Tauri 已跑通，可能更划算）。
+2. Windows WebView2 原生壳：`windows/src/` 实现 `native.ts` 的五个 op + `build-win-app.ps1`。
+3. 首次发版：`git tag v1.3.4` + `gh release create`（`gh` 尚未安装）。
 
 ## 坑（不要重复做）
 
-- **`localStorage` 静默丢数据**：实测写完立刻退出就丢（连续启动时计数器每两次才进一位），等到 3 秒后才稳。
-  App 里必须立刻落盘成文件，退出前 flush（最多等 1.5 s）。
-- **原生菜单会抢快捷键**：`⌘Z/⌘C/⌘V/⌘A` 在被送到页面之前就被 AppKit 吃掉。做法是菜单项不直接执行动作，
-  先问 `window.__obMenuActive()` 焦点是否在输入框：在输入框交给 AppKit，否则回调页面。
-- **Safari 触控板捏合不发 `ctrl+wheel`**：只处理 `ctrl+wheel` 的代码在 Safari 上等于没写，
-  要另接 `gesturestart/gesturechange/gestureend`。
-- **WebKit 剪贴板必须在手势内同步构造** `ClipboardItem`（传 Promise），否则抛 `NotAllowedError`；
-  失败要降级成下载 PNG。
+- **`localStorage` 静默丢数据**：写完立刻退出会丢，最多等 3 s 才稳 → App 里必须立刻写文件，退出前 flush（≤1.5 s）。
+- **原生菜单抢 `⌘Z/⌘C/⌘V/⌘A`**：菜单项先问 `window.__obMenuActive()` 焦点是否在输入框，是就交给 AppKit，否则回调页面。
+- **Safari 捏合不发 `ctrl+wheel`**：要另接 `gesturestart/gesturechange/gestureend`。
+- **WebKit 剪贴板**：必须在手势内同步构造 `ClipboardItem`（传 Promise），否则 `NotAllowedError`；失败降级下载 PNG。
 - **`build-mac-app.sh --no-dmg` 曾成功却返回退出码 1**：`set -e` 配合末尾 `[ ... ] && ...` 的副作用，已改成 `if`。
-- **`github.com:22` 密钥交换会被切断**：`~/.ssh/config` 已把 `github.com` 指到 `ssh.github.com:443`。
-  这是全局配置，别的仓库也走这条；要撤销就删那一段。
-- **存档不跨版本继承**：`opticalbench://app` 与 `http://127.0.0.1:5180` 是两个 origin。换版本要先用
-  `.osopt.json` 中转（Safari 里 `⌘S`，App 里 `⌘O`）。
+- **`github.com:22` 会被切断**：`~/.ssh/config` 已把 `github.com` 指到 `ssh.github.com:443`（全局配置）。
+- **存档不跨版本继承**：`opticalbench://app` 与 `http://127.0.0.1:5180` 是两个 origin，换版本先用 `.osopt.json` 中转。
 - `git config` 是**仓库级**的（`zzrtbf` / GitHub noreply 邮箱），换机器不继承。
-- **已确认（2026-11-08）**：Windows 侧此前用 **Tauri 打包成功过**，但在另一台 Windows 电脑上，
-  那台机器暂不在手边，所以没有合并进本仓库（`windows/` 现在只有 `.bat`）。**用户决定以后再处理**，
-  不是悬案、不用每次会议重问。合并时仍需核实 Windows 版是否与 v1.3.2 对齐
-  （自动光路、v1.3.1 文本缩放）。
+- **Windows Tauri 不是悬案**：另一台机器上已打包成功过，等机器可取回再处理，不要重问；合并时核实与 v1.3.2 对齐。

@@ -1,5 +1,6 @@
 import { useEditor } from '../store';
 import { useConflictIds } from '../lib/conflicts';
+import { visibleBeams } from '../lib/beams';
 import { fmt } from '../lib/geom';
 import { IconAlert } from './Icons';
 
@@ -21,7 +22,7 @@ export function StatusBar() {
       <span className="sb-item mono">{Math.round(zoom * 100)}%</span>
       <span className="sb-sep" />
       <span className="sb-item">
-        {project.items.length} parts · {project.beams.length} beams
+        {project.items.length} parts · {visibleBeams(project).length} beams
       </span>
       <span className="sb-sep" />
       <span className={`sb-item ${conflicts.size ? 'is-bad' : ''}`}>

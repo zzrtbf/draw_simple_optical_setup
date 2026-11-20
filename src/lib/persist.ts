@@ -1,5 +1,6 @@
 import type { Project } from '../model/types';
 import { normalizeProject } from '../model/types';
+import { visibleBeams } from './beams';
 import { safeName } from './export';
 import { nativeBridge, nativeOpenProjectFile } from './native';
 
@@ -149,7 +150,7 @@ export function buildScene3D(project: Project) {
       model3d: it.kind === 'lib' ? (it.model3d ?? null) : null,
       label: it.kind === 'text' ? it.text : it.label,
     })),
-    beams: project.beams.map((b) => ({
+    beams: visibleBeams(project).map((b) => ({
       id: b.id,
       a: [b.x1, b.y1, b.z],
       b: [b.x2, b.y2, b.z],

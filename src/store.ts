@@ -13,6 +13,11 @@ import {
 import { CATALOG_BY_KEY } from './model/catalog';
 import { nativeBridge, nativeWriteAutosave } from './lib/native';
 import { wavelengthToColor } from './lib/spectrum';
+import { opticSpec } from './lib/opticsMap';
+import { traceScene } from './lib/optics';
+import { bakeTracedBeams } from './lib/bake';
+import { isBeamHidden, visibleBeams } from './lib/beams';
+import { toast } from './lib/toast';
 import {
   bboxOfPoints,
   clamp,
@@ -73,6 +78,10 @@ export interface EditorState {
   addBox: (at?: Pt) => void;
   addText: (at?: Pt) => void;
   addBeam: (b: NewBeam) => void;
+  /** copy a source's auto-traced path into editable beams and switch it to hand-drawn */
+  bakeSourceBeams: (sourceId: string) => void;
+  /** flip one source between auto tracing and hand-drawn (baked beams hide/show) */
+  setSourceAutoBeams: (sourceId: string, on: boolean) => void;
 
   updateItem: (id: string, patch: Partial<Item>, record?: boolean) => void;
   updateBeam: (id: string, patch: Partial<Beam>, record?: boolean) => void;
@@ -401,6 +410,40 @@ export const useEditor = create<EditorState>()((set, get) => {
       };
       record((proj) => ({ ...proj, beams: [...proj.beams, beam] }));
       set({ selection: [beam.id], tool: 'select' });
+    },
+
+    bakeSourceBeams: (sourceId) => {
+      const s = get();
+      const item = s.project.items.find((i) => i.id === sourceId);
+      if (!item || item.kind !== 'lib' || item.autoBeams === false) return;
+      const spec = opticSpec(item.lib);
+      if (!spec || (spec.role !== 'source' && spec.role !== 'coupler')) return;
+      const traced = traceScene(s.project).filter((b) => b.sourceId === sourceId);
+      if (traced.length === 0) return;
+      const baked = bakeTracedBeams(traced, item);
+      if (baked.length === 0) return;
+      record((proj) => ({
+        ...proj,
+        items: proj.items.map((it) => (it.id === sourceId ? ({ ...it, autoBeams: false } as Item) : it)),
+        beams: [...proj.beams, ...baked],
+      }));
+      set({ selection: baked.map((b) => b.id), tool: 'select' });
+      toast(`${baked.length} beam${baked.length === 1 ? '' : 's'} converted to hand-drawn`);
+    },
+
+    setSourceAutoBeams: (sourceId, on) => {
+      record((proj) => ({
+        ...proj,
+        items: proj.items.map((it) => (it.id === sourceId ? ({ ...it, autoBeams: on } as Item) : it)),
+      }));
+      // switching auto back on hides this source's snapshot — drop it from the
+      // selection as well, otherwise its handles would vanish but stay selected
+      const s = get();
+      const keep = s.selection.filter((sid) => {
+        const b = s.project.beams.find((x) => x.id === sid);
+        return !b || !isBeamHidden(b, s.project.items);
+      });
+      if (keep.length !== s.selection.length) set({ selection: keep });
     },
 
     updateItem: (id, patch, shouldRecord = true) => {

@@ -45,8 +45,17 @@ const state = () =>
         showLabel: i.showLabel,
         workingDistance: i.workingDistance,
         split: i.split,
+        autoBeams: i.autoBeams,
       })),
-      beams: s.project.beams.map((b) => ({ id: b.id, x1: b.x1, y1: b.y1, x2: b.x2, y2: b.y2, snap: b.snap })),
+      beams: s.project.beams.map((b) => ({
+        id: b.id,
+        x1: b.x1,
+        y1: b.y1,
+        x2: b.x2,
+        y2: b.y2,
+        snap: b.snap,
+        bakedFrom: b.bakedFrom,
+      })),
       board: s.project.board,
       selection: s.selection,
     };
@@ -91,6 +100,50 @@ check(
   'transmission ratio can be typed',
   Math.abs(st.items.find((i) => i.id === 's5').split - 0.9) < 1e-6,
   `${st.items.find((i) => i.id === 's5').split}`,
+);
+await page.evaluate(() => window.__editor.getState().select([]));
+
+/* ---- auto tracing <-> hand-drawn ---- */
+await page.evaluate(() => window.__editor.getState().select(['s1']));
+await page.waitForTimeout(250);
+const autoToggle = page.locator('.toggle', { hasText: 'Auto beams' }).first();
+check('light source exposes an auto/hand-drawn switch', (await autoToggle.count()) === 1);
+const autoCount = () =>
+  page.evaluate(() => document.querySelectorAll('[data-auto-beams] [data-auto-beam^="s1:"]').length);
+check('auto tracing is on by default', (await autoCount()) > 0);
+await autoToggle.click();
+await page.waitForTimeout(250);
+st = await state();
+check(
+  'switching auto off stops tracing this source',
+  st.items.find((i) => i.id === 's1').autoBeams === false && (await autoCount()) === 0,
+);
+await autoToggle.click();
+await page.waitForTimeout(250);
+check('switching auto back on restores the path', (await autoCount()) > 0);
+
+await page.locator('button', { hasText: 'Convert to hand-drawn' }).click();
+await page.waitForTimeout(350);
+st = await state();
+const bakedIds = st.beams.filter((b) => b.bakedFrom === 's1').map((b) => b.id);
+check(
+  'convert copies the path into editable beams',
+  bakedIds.length > 0 && st.items.find((i) => i.id === 's1').autoBeams === false,
+  `${bakedIds.length} segments`,
+);
+
+await page.evaluate(() => window.__editor.getState().select(['s1']));
+await page.waitForTimeout(200);
+await page.locator('.toggle', { hasText: 'Auto beams' }).first().click();
+await page.waitForTimeout(300);
+const hiddenBaked = await page.evaluate(
+  (ids) => ids.filter((id) => !document.querySelector(`[data-world] g[data-id="${id}"]`)).length,
+  bakedIds,
+);
+check(
+  'the hand-drawn copy hides while auto is on',
+  hiddenBaked === bakedIds.length,
+  `${hiddenBaked}/${bakedIds.length} hidden`,
 );
 await page.evaluate(() => window.__editor.getState().select([]));
 

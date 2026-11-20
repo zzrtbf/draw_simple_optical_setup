@@ -242,6 +242,8 @@ export function traceScene(project: Project): TracedBeam[] {
     if (!spec || (spec.role !== 'source' && spec.role !== 'coupler')) continue;
     const lib = item as LibItem;
     if (lib.emit === false) continue;
+    // Hand-drawn mode: the source is not traced at all; the user owns the beams.
+    if (lib.autoBeams === false) continue;
     if (spec.role === 'coupler' && lib.couplerMode === 'in') continue;
 
     const wavelength = lib.wavelength ?? spec.wavelength ?? 633;

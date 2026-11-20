@@ -1,5 +1,6 @@
 import type { Beam, Item, Project } from '../model/types';
 import { adaptInk, bboxOfPoints, itemCorners, unionBBox, type BBox } from './geom';
+import { visibleBeams } from './beams';
 import { nativeBridge, nativeSaveBlob } from './native';
 
 export interface ExportOptions {
@@ -27,7 +28,9 @@ export function contentBBox(project: Project, opts: ExportOptions): BBox {
   const items: Item[] = opts.selectionOnly
     ? project.items.filter((i) => sel.has(i.id))
     : project.items;
-  const beams: Beam[] = opts.selectionOnly ? project.beams.filter((b) => sel.has(b.id)) : project.beams;
+  const beams: Beam[] = opts.selectionOnly
+    ? visibleBeams(project).filter((b) => sel.has(b.id))
+    : visibleBeams(project);
 
   let box: BBox | null = null;
   for (const it of items) box = unionBBox(box, bboxOfPoints(itemCorners(it)));

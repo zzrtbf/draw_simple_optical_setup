@@ -7,9 +7,9 @@
 
 ## 当前阶段
 
-**v1.3.4 完成，没有正在开发的功能。** 最近两版：v1.3.3 = 物镜工作距离 + BS 透射比 + 光路下沉；
-v1.3.4 = UI 强调色青绿 → 深蓝。源码、双 README、CI、`.app`/`.dmg` 都已推到 `origin/main`；
-本文件与 `LOG.md` 入库，两台机器靠 git 同步。功能上暂不推进（见末尾）。
+**v1.3.5 完成，没有正在开发的功能。** 最近三版：v1.3.3 = 物镜工作距离 + BS 透射比 + 光路下沉；
+v1.3.4 = UI 强调色青绿 → 深蓝；v1.3.5 = 自动光路可一键转手绘、按光源来回切。源码、双 README、CI、
+`.app`/`.dmg` 都已推到 `origin/main`；本文件与 `LOG.md` 入库，两台机器靠 git 同步。功能上暂不推进（见末尾）。
 
 ## 已定决策
 
@@ -40,15 +40,18 @@ v1.3.4 = UI 强调色青绿 → 深蓝。源码、双 README、CI、`.app`/`.dmg
   所以只在两处维护：`src/lib/theme.ts` 的 `UI_ACCENT` 与 `styles.css` 的 `--accent` / `--accent-soft` /
   `--accent-line`，改色必须同步。浅色画布的原点十字线用 `#1d4ed8`。画布内容色（块色板、文字色板、
   示例布局的块）不跟着变。
+- **自动 / 手绘按光源切换**（2026-11-20 用户要）。`Auto beams` 关掉 = 该光源不追迹；`Convert to hand-drawn`
+  把当前追迹结果烘成带 `bakedFrom` 的普通 Beam（在器件面与焦点处切开），再打开 Auto 时隐藏而不删除。
+  这台工具里「物理检查」和「画图」是两件事：自动是前者，手绘/烘焙是后者。转换有损（焦点保留、包络变直线）。
 - **Playwright 回归不进 CI**（要下载浏览器，每个 job 多几分钟）；CI 只做 `npm ci` → `typecheck` →
   `build`，macOS 与 Windows 各跑一遍，防止只在 Mac 开发时 Windows 线悄悄烂掉。
 
 ## 生效参数
 
-- 版本 `1.3.4`（build 10304），唯一来源 `package.json` ｜ ad-hoc 签名，arm64，最低 macOS 11
-- 产物：`build/Optical Bench.app` 952 KB（前端资源 448 KB）｜`build/Optical Bench 1.3.4.dmg` 732 KB
-- 冷启动到窗口可见 196 / 207 ms（v1.3.2 实测；v1.3.3 / 1.3.4 未重测）｜常驻约 99 MB RSS
-- 回归测试 27（交互）+ 29（v1.1 功能）+ 35（光学引擎）= **91 项**（Chromium 与 WebKit 均通过）
+- 版本 `1.3.5`（build 10305），唯一来源 `package.json` ｜ ad-hoc 签名，arm64，最低 macOS 11
+- 产物：`build/Optical Bench.app` 956 KB（前端资源 452 KB）｜`build/Optical Bench 1.3.5.dmg` 516 KB
+- 冷启动到窗口可见 196 / 207 ms（v1.3.2 实测；1.3.3 起未重测）｜常驻约 99 MB RSS
+- 回归测试 27（交互）+ 35（v1.1 功能）+ 38（光学引擎）= **100 项**（Chromium 与 WebKit 均通过）
 - 物镜默认 WD 15 mm；出射窗口相对转轴 +22.5 mm（48 mm 筒身的前端面）
 - 端口 5180（`scripts/serve.mjs` 与 `vite` 同端口）｜缩放 3 %–6000 %（1 px/mm = 100 %）
 - 孔距 25 mm ｜ `z` 默认 25.4 mm（桌面以上）｜工程 schema `optical-setup/1`、3D 导出 `optical-bench/scene3d/1`
@@ -58,7 +61,8 @@ v1.3.4 = UI 强调色青绿 → 深蓝。源码、双 README、CI、`.app`/`.dmg
 - `src/store.ts` — zustand：工程、选择、视图、撤销快照栈
 - `src/lib/optics.ts` · `opticsMap.ts` · `spectrum.ts` — 光路追迹、器件→光学行为、波长配色（v1.3.2–1.3.3 核心）
 - `src/components/Stage.tsx` — 画布与全部指针交互；`Inspector.tsx` — 右侧属性面板
-- `src/lib/theme.ts` — 画布配色与 `UI_ACCENT`；`export.ts` · `native.ts` · `platform.ts` — 导出管线、原生桥、⌘/Ctrl 文案
+- `src/lib/bake.ts` · `beams.ts` — 自动光路转手绘 / 可见光束过滤；`theme.ts` — 画布配色与 `UI_ACCENT`
+- `src/lib/export.ts` · `native.ts` · `platform.ts` — 导出管线、原生桥、⌘/Ctrl 文案
 - `macos/src/{main,NativeBridge,WebSchemeHandler}.swift` + `scripts/build-mac-app.sh` — 原生壳与打包
 - 文档：`docs/AUTO-BEAMS.md`（光路模型与限制）· `docs/PLATFORMS.md`（双平台、桥协议、发版）
   · `docs/MACOS-APP.md`（打包实测与版本记录）
@@ -75,6 +79,8 @@ v1.3.4 = UI 强调色青绿 → 深蓝。源码、双 README、CI、`.app`/`.dmg
 - **物镜 = 出射窗口处的单一薄透镜**：只保证准直入射时焦点在窗口外 WD；非准直入射只是傍轴近似。
   有效面按器件高度（30 mm）判断，不是画出来的那个 11 mm 小窗口。
 - 光束是独立线段、不会在器件处自动断开，一条光路要画成几段（多段串成一条在计划里）。
+- **转手绘是有损的**：Gaussian 包络变成每段直线锥度（焦点和器件面宽度保留）；烘出来的光束脱离布局，
+  不再跟器件移动。
 - 冲突检测只按矩形足迹（OBB + 分离轴），不考虑器件高度；镜架等支架对光透明。
 - **GitHub Releases 上还没有二进制**，`.dmg` 只在本地 `build/` 里。
 

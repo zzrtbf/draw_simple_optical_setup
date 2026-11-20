@@ -10,7 +10,8 @@ Since v1.3.2 it also **traces beams automatically**: lasers and fibre couplers e
 lenses focus, beamsplitters split, detectors terminate — and the beam diameter follows Gaussian
 propagation. Move any part and every path is recomputed immediately. An objective focuses by its
 **working distance** (a collimated input lands WD beyond the exit window), BS / PBS **transmission**
-is set by hand, and the traced light is painted under the parts.
+is set by hand, and the traced light is painted under the parts. A traced path can be **converted to
+hand-drawn** beams and edited freely, then flipped back to auto — per source.
 
 ![auto beams](docs/auto-beams.png)
 
@@ -294,10 +295,10 @@ docs/MACOS-SAFARI.md  the no-bundling (Safari) path
 
 ```bash
 npm run dev          # one terminal
-npm run test:ui      # another terminal: three suites, 91 checks in total
+npm run test:ui      # another terminal: three suites, 100 checks in total
                      #   27 interaction (drag/zoom/rotate/beam drawing/export/save/layer order)
-                     #   29 new features (white canvas, labels, snapping, panels, objective WD, BS ratio)
-                     #   35 optics engine (reflection/lens focus/objective WD/split ratio/detector/wavelength)
+                     #   35 new features (white canvas, labels, snapping, panels, objective WD, BS ratio, auto/manual)
+                     #   38 optics engine (reflection/lens focus/objective WD/split ratio/baking/detector/wavelength)
 ```
 
 By default it uses the system Edge; `EDGE_PATH` points it at another Chromium.

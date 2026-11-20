@@ -31,6 +31,7 @@ const lines = await page.evaluate(async () => {
   const optics = await import('/src/lib/optics.ts');
   const spectrum = await import('/src/lib/spectrum.ts');
   const types = await import('/src/model/types.ts');
+  const bake = await import('/src/lib/bake.ts');
   const { traceScene, raySegment, reflect } = optics;
   const { wavelengthToColor } = spectrum;
 
@@ -151,6 +152,28 @@ const lines = await page.evaluate(async () => {
     check('T = 0 %: only the reflected arm is drawn',
       onlyR.length === 1 && rEnd.y > 300 && Math.abs(rEnd.x - 300) < 3,
       onlyR.length === 1 ? `ends at ${rEnd.x.toFixed(1)},${rEnd.y.toFixed(1)}` : `${onlyR.length} arms`);
+  }
+
+  /* --- bake: auto path -> editable hand-drawn beams --- */
+  {
+    const source = laser(100, 100, { wavelength: 1064 });
+    const traced = traceScene(proj([source, item('O', 'x-objective', 300, 100, 0, { w: 48, h: 30, workingDistance: 15 })]));
+    const baked = bake.bakeTracedBeams(traced, source);
+    const ends = baked.flatMap((b) => [
+      { x: b.x1, w: b.w1 },
+      { x: b.x2, w: b.w2 },
+    ]);
+    const focus = ends.reduce((a, c) => (c.w < a.w ? c : a));
+    check('bake: keeps the focus at exit window + WD',
+      Math.abs(focus.x - 337.5) < 0.6 && focus.w < 0.1, `focus at x=${focus.x.toFixed(1)}, w=${focus.w.toFixed(3)}`);
+    check('bake: path becomes straight segments cut at the lens', baked.length === 3, `${baked.length} segments`);
+
+    const l2 = laser(100, 100);
+    const bs = item('S', 'b-bsp', 300, 100, 0, { w: 23.4, h: 23.4, split: 0.9 });
+    const baked2 = bake.bakeTracedBeams(traceScene(proj([l2, bs])), l2);
+    const bright = Math.max(...baked2.map((b) => b.opacity));
+    const dim = Math.min(...baked2.map((b) => b.opacity));
+    check('bake: keeps the 90/10 split brightness', Math.abs(bright / dim - 9) < 0.2, `${bright.toFixed(2)} / ${dim.toFixed(2)}`);
   }
 
   /* --- divergence survives the split --- */

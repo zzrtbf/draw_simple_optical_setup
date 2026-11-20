@@ -41,6 +41,12 @@ export interface LibItem extends ItemBase {
   /* --- optics (only meaningful for parts that appear in lib/opticsMap.ts) --- */
   /** emit light (sources and fiber couplers) */
   emit?: boolean;
+  /**
+   * Trace this source's beams from the layout (default). Set false to keep the
+   * source dark and draw/edit its beams by hand — "Convert to hand-drawn" sets
+   * this to false after copying the current trace into normal Beam objects.
+   */
+  autoBeams?: boolean;
   /** vacuum wavelength, nm */
   wavelength?: number;
   /** collimated output diameter, mm */
@@ -81,6 +87,8 @@ export type Item = LibItem | BoxItem | TextItem;
 
 export interface Beam {
   id: string;
+  /** set on beams copied out of an auto-traced path; the source they came from */
+  bakedFrom?: string;
   x1: number;
   y1: number;
   x2: number;

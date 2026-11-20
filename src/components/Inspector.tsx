@@ -95,6 +95,11 @@ function OpticsSection({ item, c }: { item: LibItem; c: ReturnType<typeof useCom
           checked={item.emit !== false}
           onChange={(v) => c.commitItem(item.id, { emit: v })}
         />
+        <Toggle
+          label="Auto beams"
+          checked={item.autoBeams !== false}
+          onChange={(v) => useEditor.getState().setSourceAutoBeams(item.id, v)}
+        />
 
         <Row>
           <NumField
@@ -152,9 +157,22 @@ function OpticsSection({ item, c }: { item: LibItem; c: ReturnType<typeof useCom
             onChange={(v) => c.commitItem(item.id, { beamOpacity: v })}
           />
         </Row>
+        {emitting && item.autoBeams !== false && (
+          <div className="btn-row">
+            <button onClick={() => useEditor.getState().bakeSourceBeams(item.id)}>
+              Convert to hand-drawn
+            </button>
+          </div>
+        )}
         <div className="hint">
           Emits a collimated beam from the front face along the part&rsquo;s local +x; rotate the part
           to aim it. Parallel to the table, thin-element paraxial model.
+        </div>
+        <div className="hint">
+          <b>Auto beams</b> traces the path from the layout and keeps it in sync. Turn it off to draw
+          this source&rsquo;s light yourself with the <b>B</b> tool, or press <b>Convert to hand-drawn</b>{' '}
+          to copy the current path into editable beams (cut at every surface and focus). Converted
+          beams are hidden while auto is on, so you can flip between the two.
         </div>
       </Section>
     );

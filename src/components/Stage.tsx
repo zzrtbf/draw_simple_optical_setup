@@ -20,6 +20,7 @@ import {
   type Pt,
 } from '../lib/geom';
 import { THEMES, UI_ACCENT } from '../lib/theme';
+import { isBeamHidden, visibleBeams } from '../lib/beams';
 import { useConflictIds } from '../lib/conflicts';
 import { AutoBeams } from './AutoBeams';
 import { IS_MAC } from '../lib/platform';
@@ -704,7 +705,7 @@ export function Stage({ svgRef }: { svgRef: React.RefObject<SVGSVGElement | null
           .filter((i) => sel.includes(i.id) && !i.locked)
           .map((i) => ({ id: i.id, x: i.x, y: i.y }));
         const beams = cur.project.beams
-          .filter((b) => sel.includes(b.id) && !b.locked)
+          .filter((b) => sel.includes(b.id) && !b.locked && !isBeamHidden(b, cur.project.items))
           .map((b) => ({ id: b.id, x1: b.x1, y1: b.y1, x2: b.x2, y2: b.y2 }));
         const primItem = cur.project.items.find((i) => i.id === hitId);
         const primBeam = cur.project.beams.find((b) => b.id === hitId);
@@ -905,6 +906,7 @@ export function Stage({ svgRef }: { svgRef: React.RefObject<SVGSVGElement | null
         if (c.some((p) => p.x >= r.minX && p.x <= r.maxX && p.y >= r.minY && p.y <= r.maxY)) ids.push(it.id);
       }
       for (const bm of st.project.beams) {
+        if (isBeamHidden(bm, st.project.items)) continue;
         if (
           (bm.x1 >= r.minX && bm.x1 <= r.maxX && bm.y1 >= r.minY && bm.y1 <= r.maxY) ||
           (bm.x2 >= r.minX && bm.x2 <= r.maxX && bm.y2 >= r.minY && bm.y2 <= r.maxY)
@@ -1087,7 +1089,7 @@ export function Stage({ svgRef }: { svgRef: React.RefObject<SVGSVGElement | null
             <line x1={0} y1={-6} x2={0} y2={6} />
           </g>
 
-          {project.beams.map((b) => (
+          {visibleBeams(project).map((b) => (
             <BeamView key={b.id} beam={b} selected={selected.has(b.id)} zoom={zoom} theme={theme} />
           ))}
 
@@ -1122,7 +1124,7 @@ export function Stage({ svgRef }: { svgRef: React.RefObject<SVGSVGElement | null
             <TextHandles item={singleItem} zoom={zoom} />
           )}
           {project.beams
-            .filter((b) => selected.has(b.id) && !b.locked)
+            .filter((b) => selected.has(b.id) && !b.locked && !isBeamHidden(b, project.items))
             .map((b) => (
               <BeamHandles key={b.id} beam={b} zoom={zoom} />
             ))}

@@ -264,10 +264,10 @@ docs/MACOS-SAFARI.md  macOS 免打包（Safari）路径说明
 
 ```bash
 npm run dev          # 一个终端
-npm run test:ui      # 另一个终端：三套共 90 项
+npm run test:ui      # 另一个终端：三套共 91 项
                      #   27 交互（拖拽/缩放/旋转/画光束/导出/保存/图层顺序）
                      #   29 新功能（白底、标签、吸附、面板、物镜 WD、BS 透射比）
-                     #   34 光学引擎（反射/透镜/物镜 WD/分束比/探测器/波长配色）
+                     #   35 光学引擎（反射/透镜/物镜 WD/分束比/探测器/波长配色）
 ```
 
 默认用系统里的 Edge，`EDGE_PATH` 环境变量可以换别的 Chromium。

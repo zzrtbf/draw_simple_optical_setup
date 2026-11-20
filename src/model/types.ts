@@ -195,7 +195,13 @@ export function normalizeProject(p: Project): Project {
       }
       if (spec?.role === 'lens') {
         if (spec.workingDistance !== undefined) {
-          if (o.workingDistance === undefined) o.workingDistance = spec.workingDistance;
+          if (o.workingDistance === undefined) {
+            // v1.3.2 and earlier stored the objective's thin-lens focal length.
+            // Carry that number over as the working distance so an existing
+            // layout keeps the value the user typed.
+            const oldFocal = typeof o.focal === 'number' ? o.focal : undefined;
+            o.workingDistance = oldFocal !== undefined && oldFocal > 0 ? oldFocal : spec.workingDistance;
+          }
         } else if (o.focal === undefined) {
           o.focal = spec.focal ?? 100;
         }

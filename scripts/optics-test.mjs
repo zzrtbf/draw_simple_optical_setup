@@ -30,6 +30,7 @@ await page.goto(URL, { waitUntil: 'load' });
 const lines = await page.evaluate(async () => {
   const optics = await import('/src/lib/optics.ts');
   const spectrum = await import('/src/lib/spectrum.ts');
+  const types = await import('/src/model/types.ts');
   const { traceScene, raySegment, reflect } = optics;
   const { wavelengthToColor } = spectrum;
 
@@ -117,6 +118,16 @@ const lines = await page.evaluate(async () => {
     const farWaist = far[0].samples.reduce((a, s) => (s.hw < a.hw ? s : a));
     check('objective: WD sets the focus distance',
       Math.abs(farWaist.x - (windowAt + 40)) < 1, `waist at x=${farWaist.x.toFixed(1)}, expected ${(windowAt + 40).toFixed(1)}`);
+  }
+
+  /* --- migration: a v1.3.2 objective's focal becomes its working distance --- */
+  {
+    const oldProject = proj([
+      item('O', 'x-objective', 300, 100, 0, { w: 48, h: 30, focal: 30 }),
+    ]);
+    const migrated = types.normalizeProject(oldProject);
+    check('objective migration: an old focal becomes the working distance',
+      migrated.items[0].workingDistance === 30, `${migrated.items[0].workingDistance}`);
   }
 
   /* --- splitter ratio --- */

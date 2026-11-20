@@ -294,10 +294,10 @@ docs/MACOS-SAFARI.md  the no-bundling (Safari) path
 
 ```bash
 npm run dev          # one terminal
-npm run test:ui      # another terminal: three suites, 90 checks in total
+npm run test:ui      # another terminal: three suites, 91 checks in total
                      #   27 interaction (drag/zoom/rotate/beam drawing/export/save/layer order)
                      #   29 new features (white canvas, labels, snapping, panels, objective WD, BS ratio)
-                     #   34 optics engine (reflection/lens focus/objective WD/split ratio/detector/wavelength)
+                     #   35 optics engine (reflection/lens focus/objective WD/split ratio/detector/wavelength)
 ```
 
 By default it uses the system Edge; `EDGE_PATH` points it at another Chromium.

@@ -44,7 +44,7 @@
 - 版本 `1.3.3`（build 10303），唯一来源 `package.json` ｜ ad-hoc 签名，arm64，最低 macOS 11
 - 产物：`build/Optical Bench.app` 952 KB（前端资源 448 KB）｜`build/Optical Bench 1.3.3.dmg` 732 KB
 - 冷启动到窗口可见 196 / 207 ms（v1.3.2 实测；v1.3.3 未重测，只改绘制与面板）｜常驻约 99 MB RSS
-- 回归测试 27（交互）+ 29（v1.1 功能）+ 34（光学引擎）= **90 项**（Chromium 与 WebKit 均通过）
+- 回归测试 27（交互）+ 29（v1.1 功能）+ 35（光学引擎）= **91 项**（Chromium 与 WebKit 均通过）
 - 物镜默认 WD 15 mm；出射窗口相对转轴 +22.5 mm（48 mm 筒身的前端面）
 - 端口 5180（`scripts/serve.mjs` 与 `vite` 同端口）｜缩放 3 %–6000 %（1 px/mm = 100 %）
 - 孔距 25 mm ｜ `z` 默认 25.4 mm（桌面以上）｜工程 schema `optical-setup/1`、3D 导出 `optical-bench/scene3d/1`

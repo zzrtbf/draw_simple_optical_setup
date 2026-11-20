@@ -10,16 +10,16 @@
 - 物镜：`opticsMap.ts` 新增 `faceAt`（有效面在本地 +x 上的位置，按器件宽度取比例）与 `workingDistance`；
   `x-objective` 的 `faceAt = 46.5/48`（图形的前端窗口）。`buildElements` 把有效面沿旋转后的本地 +x
   平移，并把焦距取成 WD——于是准直入射在窗口外 WD 处聚焦，镜筒中间不再有透镜面。面板显示 WD 和
-  窗口偏移（默认 +22.5 mm）。旧工程里的 `focal: 18` 留在 JSON 里但不再参与追迹，`normalizeProject`
-  给老物镜补 WD = 15。
+  窗口偏移（默认 +22.5 mm）。旧工程里的 `focal` 留在 JSON 里但不再参与追迹；`normalizeProject`
+  把老的 `focal` 迁移成 WD（没有 focal 时才用 15），这样 v1.3.2 存的物镜焦距不会丢。
 - 图层：`Stage.tsx` 把 `<AutoBeams>` 从 items 之后移到之前（手绘光束仍在它上面），反射光到器件轮廓
   为止；探测器端点的光点也一起下移，会被探测器图形盖住一点，属于预期。
 - 分束比：`TracedBeam` 加 `power`（相对源功率），`PathState` 每次过 BS 乘 `split`，反射支取 `1−split`；
   功率 ≤ 1e-3 的支路不生成。`AutoBeams` 按同一 sourceId 的最大功率归一化透明度，所以 50/50 与旧版
   外观一致，90/10 时反射支变暗；弱支保留 0.06 的可见度下限。Inspector 加 `T %` 输入与 `R = 100−T`
   读数。PBS 仍是几何分光，不做偏振。
-- 测试：光学 27→34（WD=15/40 的焦点位置、镜筒中心不聚焦、T=90/100/0、功率值）；交互 26→27
-  （DOM 顺序：`AutoBeams` 在 items 之前）；v1.1 25→29（WD 输入、T 输入）。90 项在 Chromium 与
+- 测试：光学 27→35（WD=15/40 的焦点位置、镜筒中心不聚焦、T=90/100/0、功率值）；交互 26→27
+  （DOM 顺序：`AutoBeams` 在 items 之前）；v1.1 25→29（WD 输入、T 输入）。91 项在 Chromium 与
   WebKit 上都通过。
 - 产物：`.app` 952 KB、`.dmg` 732 KB、build 10303；冷启动未重测，沿用 v1.3.2 的 196/207 ms 记录。
 - 文档：AUTO-BEAMS（物镜模型、T/R、图层、限制）、中英 README、MACOS-APP 版本记录、AGENTS 约定、

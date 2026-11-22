@@ -9,8 +9,9 @@
 
 **v1.3.5 完成，没有正在开发的功能。** 最近三版：v1.3.3 = 物镜工作距离 + BS 透射比 + 光路下沉；
 v1.3.4 = UI 强调色青绿 → 深蓝；v1.3.5 = 自动光路可一键转手绘、按光源来回切（11-22 修补了手绘吸附/对齐
-与文字点击外保存，版本号按用户要求仍为 1.3.5）。源码、双 README、CI、`.app`/`.dmg` 都已推到
-`origin/main`；本文件与 `LOG.md` 入库，两台机器靠 git 同步。功能上暂不推进（见末尾）。
+与文字点击外保存，版本号按用户要求仍为 1.3.5）。源码、双 README 与 CI 在 `origin/main`；
+`.app`/`.dmg` 只在本地 `build/`（按约定不入库，也还没发 Release）；本文件与 `LOG.md` 入库，
+两台机器靠 git 同步。功能上暂不推进（见末尾）。
 
 ## 已定决策
 
@@ -50,7 +51,11 @@ v1.3.4 = UI 强调色青绿 → 深蓝；v1.3.5 = 自动光路可一键转手绘
 ## 生效参数
 
 - 版本 `1.3.5`（build 10305），唯一来源 `package.json` ｜ ad-hoc 签名，arm64，最低 macOS 11
-- 产物：`build/Optical Bench.app` 956 KB（前端资源 452 KB）｜`build/Optical Bench 1.3.5.dmg` 516 KB
+- **1.3.5 有两份构建**：初版 `5eda8d4`（11-20，烘焙功能）与修补版 `989da46`（11-22，吸附/对齐/文字），
+  版本号与 build 都是 1.3.5 / 10305。机器上装的是哪份只能看提交或按 11-22 行为区分；当前 `/Applications`
+  里是 11-22 修补版。
+- 产物：`build/Optical Bench.app` 956 KB（前端资源 452 KB）｜`build/Optical Bench 1.3.5.dmg` 516 KB。
+  `.app` 拖进 `/Applications` 后 Finder 会把它从 `build/` 移走，`npm run app:run` 前要先重跑 `app:build`。
 - 冷启动到窗口可见 196 / 207 ms（v1.3.2 实测；1.3.3 起未重测）｜常驻约 99 MB RSS
 - 回归测试 28（交互）+ 39（v1.1 功能）+ 38（光学引擎）= **105 项**（Chromium 与 WebKit 均通过）
 - 物镜默认 WD 15 mm；出射窗口相对转轴 +22.5 mm（48 mm 筒身的前端面）
@@ -87,12 +92,13 @@ v1.3.4 = UI 强调色青绿 → 深蓝；v1.3.5 = 自动光路可一键转手绘
 
 ## 下一步
 
-**等用户定方向**（2026-11-08 起不推进新功能）。三条候选：
+**等用户定方向**（2026-11-22 起暂停新功能；11-08 的「暂不推进」中间被 11-20/22 的需求恢复过）。三条候选：
 
 1. **合并 Windows 侧已有的 Tauri 打包工作**——等那台 Windows 电脑可取回；届时重评
    `docs/PLATFORMS.md` 的 WebView2 推荐（Tauri 已跑通，可能更划算）。
-2. Windows WebView2 原生壳：`windows/src/` 实现 `native.ts` 的五个 op + `build-win-app.ps1`。
-3. 首次发版：`git tag v1.3.4` + `gh release create`（`gh` 尚未安装）。
+2. Windows WebView2 原生壳：新建 `windows/src/`（现在不存在，只有占位 `windows/README.md`），
+   实现 `native.ts` 的五个 op + `build-win-app.ps1`。
+3. 首次发版：`git tag v1.3.5` + `gh release create`（`gh` 尚未安装；仓库目前一个 tag 都没有）。
 
 ## 坑（不要重复做）
 
@@ -104,6 +110,10 @@ v1.3.4 = UI 强调色青绿 → 深蓝；v1.3.5 = 自动光路可一键转手绘
 - **`github.com:22` 会被切断**：`~/.ssh/config` 已把 `github.com` 指到 `ssh.github.com:443`（全局配置）。
 - **存档不跨版本继承**：`opticalbench://app` 与 `http://127.0.0.1:5180` 是两个 origin，换版本先用 `.osopt.json` 中转。
 - `git config` 是**仓库级**的（`zzrtbf` / GitHub noreply 邮箱），换机器不继承。
+- **`build/Optical Bench.app` 会被安装动作移走**：拖进 `/Applications` 后 `build/` 里只剩 `.dmg`，
+  `npm run app:run` 会找不到；重跑 `app:build`，或直接开 `/Applications` 里的。
+- **本机没有系统 Chrome/Edge**：`npm run test:ui` 默认找不到浏览器；用 `PW_ENGINE=webkit`，或把 `EDGE_PATH`
+  指到 `~/Library/Caches/ms-playwright/chromium_headless_shell-*/chrome-headless-shell-mac-arm64/chrome-headless-shell`。
 - **点击画布会丢文字编辑**：画布的 `pointerdown` 会先关编辑框，`onBlur` 来不及提交。现在 `TextEditor`
   在 window 的捕获阶段先 commit 再关；Esc 仍是取消，Cmd/Ctrl+Enter 仍是提交。
 - **烘焙光束的吸附**：默认 `snap: true`；多选光束的 `Snap beams to hole grid` 可批量改。旧的 false 副本

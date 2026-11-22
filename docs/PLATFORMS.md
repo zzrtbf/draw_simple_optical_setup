@@ -99,15 +99,15 @@ npm run app:build                         # macOS: Optical Bench.app + .dmg
                                           # Windows: 将来是 build-win-app.ps1（暂未实现）
 
 # 3. 打 tag、发 Release，把 .dmg / .exe 作为附件传上去
-git tag v1.3.3 && git push origin v1.3.3
-gh release create v1.3.3 "build/Optical Bench 1.3.3.dmg" --title "v1.3.3"
+git tag v1.3.5 && git push origin v1.3.5
+gh release create v1.3.5 "build/Optical Bench 1.3.5.dmg" --title "v1.3.5"
 ```
 
 Release 附件命名带平台后缀，两个版本就能并排躺着、互不覆盖：
 
 ```
-Optical Bench 1.3.3 macOS-arm64.dmg
-Optical Bench 1.3.3 Windows-x64.exe
+Optical Bench 1.3.5 macOS-arm64.dmg
+Optical Bench 1.3.5 Windows-x64.exe
 ```
 
 ## CI

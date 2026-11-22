@@ -178,6 +178,19 @@ await page.waitForTimeout(150);
 st = await readState();
 check('inline edit commits', st.items.find((i) => i.id === textItem.id).text === 'MOT beam');
 
+/* clicking the canvas must save the edit, not just close the editor */
+await page.locator(`[data-id="${textItem.id}"]`).first().dblclick();
+await page.waitForTimeout(200);
+await page.locator('.text-editor').fill('click away');
+await page.mouse.click(stageBox.x + 30, stageBox.y + stageBox.height - 30);
+await page.waitForTimeout(250);
+st = await readState();
+check(
+  'clicking outside commits the text edit',
+  st.items.find((i) => i.id === textItem.id).text === 'click away',
+  st.items.find((i) => i.id === textItem.id).text,
+);
+
 /* marquee */
 await page.keyboard.press('Escape');
 await page.mouse.move(300, 120);

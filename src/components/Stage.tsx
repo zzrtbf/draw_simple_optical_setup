@@ -1306,10 +1306,24 @@ function TextEditor({
   const item = useEditor((s) => s.project.items.find((i) => i.id === id)) as TextItem | undefined;
   const [value, setValue] = useState(item?.text ?? '');
   const ref = useRef<HTMLTextAreaElement>(null);
+  const closed = useRef(false);
+  const commitRef = useRef<() => void>(() => {});
 
   useEffect(() => {
     ref.current?.focus();
     ref.current?.select();
+  }, []);
+
+  // Clicking outside the textarea has to save *before* the canvas closes the
+  // editor: the SVG's pointerdown unmounts it, and waiting for blur loses the
+  // edit (the old code closed first and the change silently vanished).
+  useEffect(() => {
+    const onDown = (e: PointerEvent) => {
+      if (ref.current?.contains(e.target as Node)) return;
+      commitRef.current();
+    };
+    window.addEventListener('pointerdown', onDown, true);
+    return () => window.removeEventListener('pointerdown', onDown, true);
   }, []);
 
   if (!item) return null;
@@ -1317,12 +1331,15 @@ function TextEditor({
   const top = view.panY + (frame.cy - frame.h / 2) * view.zoom;
 
   const commit = () => {
+    if (closed.current) return;
+    closed.current = true;
     if (value !== item.text) {
       useEditor.getState().pushHistory();
       useEditor.getState().updateItem(id, { text: value } as Partial<Item>, false);
     }
     onDone();
   };
+  commitRef.current = commit;
 
   return (
     <textarea
@@ -1341,7 +1358,10 @@ function TextEditor({
       onChange={(e) => setValue(e.target.value)}
       onBlur={commit}
       onKeyDown={(e) => {
-        if (e.key === 'Escape') onDone();
+        if (e.key === 'Escape') {
+          closed.current = true;
+          onDone();
+        }
         if (e.key === 'Enter' && (e.ctrlKey || e.metaKey)) commit();
         e.stopPropagation();
       }}

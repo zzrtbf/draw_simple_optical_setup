@@ -656,6 +656,10 @@ function BeamPanel({ beam }: { beam: Beam }) {
 
 function MultiPanel({ count }: { count: number }) {
   const align = useEditor((s) => s.alignSelection);
+  const allBeams = useEditor((s) => s.project.beams);
+  const selection = useEditor((s) => s.selection);
+  const selectedBeams = allBeams.filter((b) => selection.includes(b.id));
+  const snapAll = selectedBeams.length > 0 && selectedBeams.every((b) => b.snap);
   return (
     <>
       <div className="insp-title">
@@ -675,6 +679,13 @@ function MultiPanel({ count }: { count: number }) {
         </div>
       </Section>
       <Section title="Object">
+        {selectedBeams.length > 0 && (
+          <Toggle
+            label="Snap beams to hole grid"
+            checked={snapAll}
+            onChange={(v) => useEditor.getState().setBeamsSnap(v)}
+          />
+        )}
         <div className="btn-row">
           <button onClick={() => useEditor.getState().duplicateSelection()}>
             <IconCopy size={13} /> Duplicate

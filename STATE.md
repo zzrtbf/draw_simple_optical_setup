@@ -8,8 +8,9 @@
 ## 当前阶段
 
 **v1.3.5 完成，没有正在开发的功能。** 最近三版：v1.3.3 = 物镜工作距离 + BS 透射比 + 光路下沉；
-v1.3.4 = UI 强调色青绿 → 深蓝；v1.3.5 = 自动光路可一键转手绘、按光源来回切。源码、双 README、CI、
-`.app`/`.dmg` 都已推到 `origin/main`；本文件与 `LOG.md` 入库，两台机器靠 git 同步。功能上暂不推进（见末尾）。
+v1.3.4 = UI 强调色青绿 → 深蓝；v1.3.5 = 自动光路可一键转手绘、按光源来回切（11-22 修补了手绘吸附/对齐
+与文字点击外保存，版本号按用户要求仍为 1.3.5）。源码、双 README、CI、`.app`/`.dmg` 都已推到
+`origin/main`；本文件与 `LOG.md` 入库，两台机器靠 git 同步。功能上暂不推进（见末尾）。
 
 ## 已定决策
 
@@ -51,7 +52,7 @@ v1.3.4 = UI 强调色青绿 → 深蓝；v1.3.5 = 自动光路可一键转手绘
 - 版本 `1.3.5`（build 10305），唯一来源 `package.json` ｜ ad-hoc 签名，arm64，最低 macOS 11
 - 产物：`build/Optical Bench.app` 956 KB（前端资源 452 KB）｜`build/Optical Bench 1.3.5.dmg` 516 KB
 - 冷启动到窗口可见 196 / 207 ms（v1.3.2 实测；1.3.3 起未重测）｜常驻约 99 MB RSS
-- 回归测试 27（交互）+ 36（v1.1 功能）+ 38（光学引擎）= **101 项**（Chromium 与 WebKit 均通过）
+- 回归测试 28（交互）+ 39（v1.1 功能）+ 38（光学引擎）= **105 项**（Chromium 与 WebKit 均通过）
 - 物镜默认 WD 15 mm；出射窗口相对转轴 +22.5 mm（48 mm 筒身的前端面）
 - 端口 5180（`scripts/serve.mjs` 与 `vite` 同端口）｜缩放 3 %–6000 %（1 px/mm = 100 %）
 - 孔距 25 mm ｜ `z` 默认 25.4 mm（桌面以上）｜工程 schema `optical-setup/1`、3D 导出 `optical-bench/scene3d/1`
@@ -103,4 +104,8 @@ v1.3.4 = UI 强调色青绿 → 深蓝；v1.3.5 = 自动光路可一键转手绘
 - **`github.com:22` 会被切断**：`~/.ssh/config` 已把 `github.com` 指到 `ssh.github.com:443`（全局配置）。
 - **存档不跨版本继承**：`opticalbench://app` 与 `http://127.0.0.1:5180` 是两个 origin，换版本先用 `.osopt.json` 中转。
 - `git config` 是**仓库级**的（`zzrtbf` / GitHub noreply 邮箱），换机器不继承。
+- **点击画布会丢文字编辑**：画布的 `pointerdown` 会先关编辑框，`onBlur` 来不及提交。现在 `TextEditor`
+  在 window 的捕获阶段先 commit 再关；Esc 仍是取消，Cmd/Ctrl+Enter 仍是提交。
+- **烘焙光束的吸附**：默认 `snap: true`；多选光束的 `Snap beams to hole grid` 可批量改。旧的 false 副本
+  要么批量开，要么重烘。
 - **Windows Tauri 不是悬案**：另一台机器上已打包成功过，等机器可取回再处理，不要重问；合并时核实与 v1.3.2 对齐。

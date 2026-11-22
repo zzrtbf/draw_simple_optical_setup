@@ -131,6 +131,10 @@ check(
   bakedIds.length > 0 && st.items.find((i) => i.id === 's1').autoBeams === false,
   `${bakedIds.length} segments`,
 );
+check(
+  'converted beams snap to the hole grid by default',
+  st.beams.filter((b) => b.bakedFrom === 's1').every((b) => b.snap),
+);
 
 await page.evaluate(() => window.__editor.getState().select(['s1']));
 await page.waitForTimeout(200);
@@ -154,6 +158,27 @@ check(
   're-baking refreshes instead of stacking',
   bakedAgain.length === bakedIds.length,
   `${bakedAgain.length} vs ${bakedIds.length}`,
+);
+/* ---- two beams: align + bulk snap ---- */
+await page.evaluate(() => window.__editor.getState().select(['sb3', 'sb4']));
+await page.waitForTimeout(250);
+await page.locator('button', { hasText: 'Top' }).click();
+await page.waitForTimeout(250);
+st = await state();
+const b3 = st.beams.find((b) => b.id === 'sb3');
+const b4 = st.beams.find((b) => b.id === 'sb4');
+check(
+  'align top moves the beams too',
+  Math.min(b3.y1, b3.y2) === Math.min(b4.y1, b4.y2),
+  `sb3 y ${b3.y1}/${b3.y2}, sb4 y ${b4.y1}/${b4.y2}`,
+);
+const beamSnap = page.locator('.toggle', { hasText: 'Snap beams to hole grid' }).first();
+await beamSnap.click();
+await page.waitForTimeout(250);
+st = await state();
+check(
+  'bulk snap switch updates every selected beam',
+  st.beams.filter((b) => b.id === 'sb3' || b.id === 'sb4').every((b) => b.snap === false),
 );
 await page.evaluate(() => window.__editor.getState().select([]));
 

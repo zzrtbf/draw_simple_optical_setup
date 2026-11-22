@@ -11,7 +11,7 @@
 | 装依赖 | `npm install` |
 | 开发（热更新） | `npm run dev` → http://127.0.0.1:5180 |
 | 类型检查 / 构建 | `npm run typecheck` · `npm run build` |
-| 回归测试 | 先起 `npm run dev`，另开终端 `npm run test:ui`（27+36+38 = 101 项） |
+| 回归测试 | 先起 `npm run dev`，另开终端 `npm run test:ui`（28+39+38 = 105 项） |
 | 只跑光学引擎 | `npm run test:optics` |
 | 换浏览器引擎 | 前缀 `PW_ENGINE=webkit`（Safari 同引擎，判断 Safari 退化的硬指标） |
 | macOS 打包 | `npm run app:build` → `build/Optical Bench.app` + `.dmg`；`-- --skip-web` 只重编 Swift |

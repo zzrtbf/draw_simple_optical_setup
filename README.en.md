@@ -295,9 +295,9 @@ docs/MACOS-SAFARI.md  the no-bundling (Safari) path
 
 ```bash
 npm run dev          # one terminal
-npm run test:ui      # another terminal: three suites, 101 checks in total
-                     #   27 interaction (drag/zoom/rotate/beam drawing/export/save/layer order)
-                     #   36 new features (white canvas, labels, snapping, panels, objective WD, BS ratio, auto/manual)
+npm run test:ui      # another terminal: three suites, 105 checks in total
+                     #   28 interaction (drag/zoom/rotate/beam drawing/export/save/layer order)
+                     #   39 new features (white canvas, labels, snapping, panels, objective WD, BS ratio, auto/manual)
                      #   38 optics engine (reflection/lens focus/objective WD/split ratio/baking/detector/wavelength)
 ```
 

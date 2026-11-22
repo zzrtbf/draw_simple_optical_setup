@@ -70,7 +70,7 @@ export function bakeTracedBeams(traced: TracedBeam[], source: LibItem): Beam[] {
         label: '',
         showLabel: false,
         locked: false,
-        snap: false,
+        snap: true,
         z: source.z,
         bakedFrom: source.id,
       });

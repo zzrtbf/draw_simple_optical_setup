@@ -91,6 +91,8 @@ export interface EditorState {
   duplicateInPlace: (ids: string[]) => void;
   nudgeSelection: (dx: number, dy: number, record?: boolean) => void;
   alignSelection: (mode: AlignMode) => void;
+  /** turn grid snapping on/off for every selected beam */
+  setBeamsSnap: (on: boolean) => void;
   reorder: (dir: 'front' | 'back' | 'up' | 'down') => void;
 
   setBoard: (patch: Partial<Project['board']>) => void;
@@ -557,14 +559,24 @@ export const useEditor = create<EditorState>()((set, get) => {
 
     alignSelection: (mode) => {
       const s = get();
-      const sel = s.project.items.filter((it) => s.selection.includes(it.id));
-      if (sel.length < 2) return;
-      const boxes = sel.map((it) => ({ it, b: bboxOfPoints(itemCorners(it)) }));
+      const items = s.project.items.filter((it) => s.selection.includes(it.id));
+      const beams = visibleBeams(s.project).filter((b) => s.selection.includes(b.id));
+      if (items.length + beams.length < 2) return;
+      const boxes = [
+        ...items.map((it) => ({ id: it.id, b: bboxOfPoints(itemCorners(it)) })),
+        ...beams.map((b) => ({
+          id: b.id,
+          b: bboxOfPoints([
+            { x: b.x1, y: b.y1 },
+            { x: b.x2, y: b.y2 },
+          ]),
+        })),
+      ];
       let total: BBox | null = null;
       for (const { b } of boxes) total = unionBBox(total, b);
       if (!total) return;
       const moves = new Map<string, Pt>();
-      for (const { it, b } of boxes) {
+      for (const { id, b } of boxes) {
         let dx = 0;
         let dy = 0;
         switch (mode) {
@@ -587,7 +599,7 @@ export const useEditor = create<EditorState>()((set, get) => {
             dy = total.maxY - b.maxY;
             break;
         }
-        moves.set(it.id, { x: dx, y: dy });
+        moves.set(id, { x: dx, y: dy });
       }
       record((proj) => ({
         ...proj,
@@ -595,6 +607,22 @@ export const useEditor = create<EditorState>()((set, get) => {
           const m = moves.get(it.id);
           return m ? { ...it, x: it.x + m.x, y: it.y + m.y } : it;
         }),
+        beams: proj.beams.map((b) => {
+          const m = moves.get(b.id);
+          return m
+            ? { ...b, x1: b.x1 + m.x, y1: b.y1 + m.y, x2: b.x2 + m.x, y2: b.y2 + m.y }
+            : b;
+        }),
+      }));
+    },
+
+    setBeamsSnap: (on) => {
+      const s = get();
+      const ids = new Set(s.project.beams.filter((b) => s.selection.includes(b.id)).map((b) => b.id));
+      if (ids.size === 0) return;
+      record((proj) => ({
+        ...proj,
+        beams: proj.beams.map((b) => (ids.has(b.id) ? { ...b, snap: on } : b)),
       }));
     },
 

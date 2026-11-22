@@ -54,8 +54,9 @@ v1.3.4 = UI 强调色青绿 → 深蓝；v1.3.5 = 自动光路可一键转手绘
 - **1.3.5 有两份构建**：初版 `5eda8d4`（11-20，烘焙功能）与修补版 `989da46`（11-22，吸附/对齐/文字），
   版本号与 build 都是 1.3.5 / 10305。机器上装的是哪份只能看提交或按 11-22 行为区分；当前 `/Applications`
   里是 11-22 修补版。
-- 产物：`build/Optical Bench.app` 956 KB（前端资源 452 KB）｜`build/Optical Bench 1.3.5.dmg` 516 KB。
-  `.app` 拖进 `/Applications` 后 Finder 会把它从 `build/` 移走，`npm run app:run` 前要先重跑 `app:build`。
+- 产物：`build/Optical Bench.app`（构建后 956 KB，前端资源 452 KB）｜`build/Optical Bench 1.3.5.dmg` 516 KB。
+  `.app` 已被拖进 `/Applications`（Finder 是移动不是复制，现在 `build/` 里只剩 `.dmg` 和裸二进制）；
+  `npm run app:run` 前要先重跑 `app:build`，或直接开 `/Applications` 里的。
 - 冷启动到窗口可见 196 / 207 ms（v1.3.2 实测；1.3.3 起未重测）｜常驻约 99 MB RSS
 - 回归测试 28（交互）+ 39（v1.1 功能）+ 38（光学引擎）= **105 项**（Chromium 与 WebKit 均通过）
 - 物镜默认 WD 15 mm；出射窗口相对转轴 +22.5 mm（48 mm 筒身的前端面）
@@ -99,6 +100,7 @@ v1.3.4 = UI 强调色青绿 → 深蓝；v1.3.5 = 自动光路可一键转手绘
 2. Windows WebView2 原生壳：新建 `windows/src/`（现在不存在，只有占位 `windows/README.md`），
    实现 `native.ts` 的五个 op + `build-win-app.ps1`。
 3. 首次发版：`git tag v1.3.5` + `gh release create`（`gh` 尚未安装；仓库目前一个 tag 都没有）。
+   不装 `gh` 就在 GitHub 网页上手动建 Release、把 `build/Optical Bench 1.3.5.dmg` 拖进附件。
 
 ## 坑（不要重复做）
 

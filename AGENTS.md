@@ -17,6 +17,10 @@
 | macOS 打包 | `npm run app:build` → `build/Optical Bench.app` + `.dmg`；`-- --skip-web` 只重编 Swift |
 | 重洗器件库 | 改 `assets/parts/*.svg` 或库素材后 `npm run gen` |
 
+> 这台 Mac 没有系统 Chrome/Edge，`npm run test:ui` 默认会报 `No Chromium-based browser found`：
+> 用 `PW_ENGINE=webkit`，或 `EDGE_PATH="$HOME/Library/Caches/ms-playwright/chromium_headless_shell-*/chrome-headless-shell-mac-arm64/chrome-headless-shell"`。
+> Windows 那台有 Edge，不用管。
+
 ## 硬约定（违反会让双平台仓库腐烂）
 
 - **版本号只有 `package.json` 一处**。`macos/Info.plist` 用 `__VERSION__`/`__BUILD__` 占位，构建时替换。
